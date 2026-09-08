@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tidewater Archive — Fable 5.1 Archive Deck (Style Study)</title>
+<style>
+  :root {
+    --paper: #FAF9F5; --paper-2: #F5F4ED;
+    --ink: #141413; --ink-2: #3D3D3A;
+    --cloud: #D1CFC5; --cloud-dark: #87867F;
+    --focus: #2C84DB;
+  }
+  /* Per-mode tokens: hero field + accent + artwork + crop position */
+  [data-theme="noon"]    { --hero:#749BD0; --mode-accent:#2F5D8A; --art:url('assets/noon.webp');    --art-pos:62% center; --art-pos-mobile:66% center; }
+  [data-theme="night"]   { --hero:#27314B; --mode-accent:#27314B; --art:url('assets/night.webp');   --art-pos:40% center; --art-pos-mobile:36% center; }
+  [data-theme="morning"] { --hero:#AAA9BC; --mode-accent:#8A6D5C; --art:url('assets/morning.webp'); --art-pos:44% center; --art-pos-mobile:40% center; }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { height:100%; }
+  body {
+    background:var(--paper); color:var(--ink);
+    font-family:Arial,"Helvetica Neue",Aptos,sans-serif;
+    -webkit-font-smoothing:antialiased; overflow:hidden;
+  }
+  :focus-visible { outline:2px solid var(--focus); outline-offset:3px; border-radius:2px; }
+
+  /* ---------- Deck machinery (horizontal paging) ---------- */
+  #deck {
+    display:flex; height:100svh; overflow-x:auto; overflow-y:hidden;
+    scroll-snap-type:x mandatory; scroll-behavior:auto;
+    scrollbar-width:none;
+  }
+  #deck::-webkit-scrollbar { display:none; }
+  .slide {
+    flex:0 0 100vw; width:100vw; height:100svh;
+    scroll-snap-align:start; position:relative; isolation:isolate;
+    padding:calc(72px + 4vh) clamp(24px,6vw,96px) calc(56px + 3vh);
+    display:flex; flex-direction:column;
+  }
+  .slide.dark { background:var(--hero); color:var(--paper); }
+  .slide.paper { background:var(--paper); color:var(--ink); }
+
+  .chrome, .foot {
+    position:absolute; left:clamp(24px,6vw,96px); right:clamp(24px,6vw,96px);
+    display:flex; justify-content:space-between; gap:16px;
+    font:11px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;
+    letter-spacing:.14em; text-transform:uppercase;
+  }
+  .chrome { top:calc(72px + 1vh); opacity:.72; }
+  .foot { bottom:3vh; opacity:.6; }
+  .dark .chrome, .dark .foot { color:var(--paper); }
+
+  /* ---------- Full-bleed art slides ---------- */
+  .art { position:absolute; inset:0; z-index:-2; width:100%; height:100%;
+         object-fit:cover; object-position:var(--art-pos); }
+  .wash { position:absolute; inset:0; z-index:-1; background:var(--hero); opacity:.84; }
+
+  /* ---------- Slide 1 · Cover ---------- */
+  .cover .date { font-size:13px; letter-spacing:.22em; opacity:.85; }
+  .cover .deck-title {
+    margin-top:auto;
+    font-family:Georgia,"Iowan Old Style","Times New Roman",serif; font-weight:400;
+    font-size:clamp(52px,9vw,120px); line-height:.98; letter-spacing:-.02em;
+    text-shadow:0 2px 18px rgba(20,20,19,.18);
+  }
+  .cover .deck-title em { display:block; font-style:italic; margin-left:.8em; }
+  .cover .deck-sub { margin-top:24px; font-size:16px; opacity:.92; max-width:52ch; }
+  .cover .modes {
+    margin-top:40px; display:flex; gap:10px; align-items:center;
+    font:11px/1 ui-monospace,Menlo,monospace; letter-spacing:.14em; text-transform:uppercase; opacity:.85;
+  }
+  .cover .modes i { width:16px; height:16px; border-radius:50%; border:1px solid rgba(250,249,245,.5); }
+  .cover .modes .m1 { background:#7EA9DE; } .cover .modes .m2 { background:#1A2237; } .cover .modes .m3 { background:#DCC4B3; }
+
+  /* ---------- Slide 2 · Index ---------- */
+  .toc { margin:auto; width:min(760px,100%); }
+  .toc .toc-date { font-size:12px; letter-spacing:.2em; text-transform:uppercase; opacity:.72; margin-bottom:36px; }
+  .toc ol { list-style:none; }
+  .toc a {
+    display:flex; align-items:baseline; gap:18px; padding:16px 0;
+    color:inherit; text-decoration:none; border-bottom:1px dotted rgba(250,249,245,.4);
+  }
+  .toc .n { font:13px/1 ui-monospace,Menlo,monospace; opacity:.75; flex:none; }
+  .toc .t { font-family:Georgia,serif; font-size:clamp(22px,3.4vw,34px); flex:none; }
+  .toc .leader { flex:1; border-bottom:1px dotted rgba(250,249,245,.4); transform:translateY(-6px); }
+  .toc .d { font:11px/1.5 ui-monospace,Menlo,monospace; opacity:.6; text-transform:uppercase; letter-spacing:.1em; }
+
+  /* ---------- Slide 3 · Modes (image-led, per-mode crop demo) ---------- */
+  .modes-slide .big {
+    margin:auto 0;
+    font-family:Georgia,serif; font-weight:400;
+    font-size:clamp(44px,7.5vw,100px); line-height:1; max-width:11ch;
+    text-shadow:0 2px 18px rgba(20,20,19,.18);
+  }
+  .modes-slide .big em { display:block; font-style:italic; margin-left:.7em; }
+  .modes-slide .mode-note {
+    position:absolute; right:clamp(24px,6vw,96px); top:50%; transform:translateY(-50%);
+    max-width:34ch; font-size:15px; line-height:1.6; opacity:.95;
+  }
+  .modes-slide .mode-note b { display:block; font:12px/1 ui-monospace,Menlo,monospace; letter-spacing:.18em; text-transform:uppercase; margin-bottom:14px; opacity:.8; font-weight:400; }
+
+  /* ---------- Slide 4 · Evidence (paper + chart) ---------- */
+  .evidence-slide h2 { font-family:Georgia,serif; font-weight:400; font-size:clamp(30px,4vw,44px); margin-bottom:8px; }
+  .evidence-slide .k { font:12px/1 ui-monospace,Menlo,monospace; letter-spacing:.18em; text-transform:uppercase; color:var(--mode-accent); margin-bottom:20px; }
+  .evidence-grid { margin-top:auto; margin-bottom:auto; display:grid; grid-template-columns:minmax(0,5fr) minmax(0,7fr); gap:clamp(24px,4vw,64px); align-items:center; }
+  .evidence-grid figure { border:1px solid var(--cloud); background:var(--paper-2); padding:14px; }
+  .evidence-grid img { display:block; width:100%; height:auto; aspect-ratio:3/2; object-fit:cover; }
+  .evidence-grid figcaption { margin-top:10px; font:10px/1.5 ui-monospace,Menlo,monospace; letter-spacing:.12em; text-transform:uppercase; color:var(--cloud-dark); }
+  .bars .bar-row { display:grid; grid-template-columns:110px 1fr 48px; gap:14px; align-items:center; margin-bottom:16px; font-size:13px; }
+  .bars .track { height:20px; background:var(--cloud); }
+  .bars .fill { height:100%; background:var(--mode-accent); }
+  .bars output { font:12px/1 ui-monospace,Menlo,monospace; text-align:right; color:var(--ink-2); }
+  .bars .note { margin-top:22px; font-size:13px; color:var(--ink-2); max-width:44ch; }
+
+  /* ---------- Slide 5 · Grammar (statement) ---------- */
+  .grammar-slide { justify-content:center; }
+  .grammar-slide .statement {
+    font-family:Georgia,serif; font-weight:400;
+    font-size:clamp(30px,4.6vw,58px); line-height:1.18; max-width:20ch;
+  }
+  .grammar-slide .statement em { font-style:italic; }
+  .grammar-slide.dark .statement em { color:var(--paper); opacity:.92; }
+  .grammar-slide.paper .statement em { color:var(--mode-accent); }
+  .grammar-slide ul { margin-top:48px; list-style:none; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px 40px; max-width:880px; }
+  .grammar-slide li { display:flex; gap:12px; align-items:baseline; font-size:14px; color:inherit; opacity:.92; }
+  .grammar-slide li .n { font:11px/1 ui-monospace,Menlo,monospace; color:var(--mode-accent); flex:none; }
+  .grammar-slide.dark li .n { color:var(--paper); opacity:.8; }
+
+  /* ---------- Slide 6 · Closing ---------- */
+  .closing { justify-content:center; }
+  .closing .fin { font-family:Georgia,serif; font-size:clamp(40px,6vw,76px); line-height:1.05; }
+  .closing .fin em { font-style:italic; display:block; margin-left:.9em; }
+  .closing .credits { margin-top:40px; font-size:13px; line-height:1.8; opacity:.9; max-width:60ch; }
+  .closing .credits b { font-weight:700; }
+
+  /* ---------- Theme dots + slide pager ---------- */
+  .theme-dots { position:fixed; left:clamp(16px,3vw,32px); bottom:20px; z-index:20; display:flex; gap:8px; }
+  .theme-dots button {
+    width:19px; height:19px; padding:0; border-radius:50%; cursor:pointer;
+    border:1px solid rgba(128,128,128,.6);
+  }
+  .theme-dots button[data-mode="noon"] { background:#7EA9DE; }
+  .theme-dots button[data-mode="night"] { background:#1A2237; }
+  .theme-dots button[data-mode="morning"] { background:#DCC4B3; }
+  .theme-dots button[aria-pressed="true"] { outline:2px solid var(--ink); outline-offset:2px; }
+  .dark-on .theme-dots button[aria-pressed="true"] { outline-color:#FAF9F5; }
+
+  .pager { position:fixed; right:clamp(16px,3vw,32px); bottom:22px; z-index:20; display:flex; gap:6px; }
+  .pager button { width:8px; height:8px; border-radius:50%; border:1px solid rgba(128,128,128,.7); background:transparent; padding:0; cursor:pointer; }
+  .pager button[aria-current="true"] { background:var(--ink); border-color:var(--ink); }
+  .dark-on .pager button[aria-current="true"] { background:#FAF9F5; border-color:#FAF9F5; }
+
+  @media (max-width:760px) {
+    .slide { padding:calc(72px + 3vh) 24px calc(72px + 3vh); }
+    .art { object-position:var(--art-pos-mobile); }
+    .chrome { left:24px; right:24px; }
+    .foot { display:none; }
+    .modes-slide .mode-note { position:static; transform:none; margin-top:36px; }
+    .modes-slide .big { margin-top:auto; }
+    .evidence-grid { grid-template-columns:1fr; gap:28px; }
+    .grammar-slide ul { grid-template-columns:1fr; }
+    .theme-dots { bottom:16px; }
+    .pager { bottom:20px; }
+  }
+  @media (prefers-reduced-motion:reduce) {
+    #deck { scroll-snap-type:none; }
+  }
+</style>
+</head>
+<body data-theme="noon">
+
+<div id="deck">
+
+  <!-- 01 · Cover -->
+  <section class="slide dark cover" data-slide="0">
+    <img class="art" src="assets/noon.webp" alt="" aria-hidden="true"><div class="wash" aria-hidden="true"></div>
+    <div class="chrome"><span>Tidewater · Style Study</span><span>01 / 06</span></div>
+    <p class="date">Archive Deck · 04 March 2026 · V 1.0</p>
+    <h1 class="deck-title">The Tidewater <em>Archive</em></h1>
+    <p class="deck-sub">One fictional archive, read three ways: noon blue, night ink, morning paper. A demonstration of the Fable 5.1 theme workflow.</p>
+    <div class="modes"><i class="m1"></i><i class="m2"></i><i class="m3"></i><span>&nbsp;Noon · Night · Morning</span></div>
+    <div class="foot"><span>Cover · Hero field</span><span>Style study · Not official</span></div>
+  </section>
+
+  <!-- 02 · Index -->
+  <section class="slide dark" data-slide="1">
+    <img class="art" src="assets/noon.webp" alt="" aria-hidden="true"><div class="wash" aria-hidden="true"></div>
+    <div class="chrome"><span>Tidewater · Contents</span><span>02 / 06</span></div>
+    <nav class="toc" aria-label="Deck contents">
+      <p class="toc-date">Index · Reader's map</p>
+      <ol>
+        <li><a href="#" data-go="2"><span class="n">[03]</span><span class="t">Three modes</span><span class="leader"></span><span class="d">colour states</span></a></li>
+        <li><a href="#" data-go="3"><span class="n">[04]</span><span class="t">Evidence</span><span class="leader"></span><span class="d">invented figures</span></a></li>
+        <li><a href="#" data-go="4"><span class="n">[05]</span><span class="t">Archive grammar</span><span class="leader"></span><span class="d">the rules</span></a></li>
+        <li><a href="#" data-go="5"><span class="n">[06]</span><span class="t">Colophon</span><span class="leader"></span><span class="d">source &amp; status</span></a></li>
+      </ol>
+    </nav>
+    <div class="foot"><span>Index · Dot leaders</span><span>Click an entry to jump</span></div>
+  </section>
+
+  <!-- 03 · Modes -->
+  <section class="slide dark modes-slide" data-slide="2">
+    <img class="art" src="assets/noon.webp" alt="" aria-hidden="true"><div class="wash" aria-hidden="true"></div>
+    <div class="chrome"><span>Tidewater · Modes</span><span>03 / 06</span></div>
+    <h2 class="big">Three readings <em>of one archive</em></h2>
+    <p class="mode-note"><b id="mode-name">Noon · the public record</b><span id="mode-desc">Open, calm, scan-friendly. The reading you give a stranger at midday.</span></p>
+    <div class="foot"><span>Modes · Full-bleed art</span><span>Switch themes · bottom left</span></div>
+  </section>
+
+  <!-- 04 · Evidence -->
+  <section class="slide paper evidence-slide" data-slide="3">
+    <div class="chrome"><span>Tidewater · Evidence</span><span>04 / 06</span></div>
+    <p class="k">[04] · Invented catalogue counts, 2026</p>
+    <h2>What the shelves hold</h2>
+    <div class="evidence-grid">
+      <figure>
+        <img src="assets/illustration.webp" width="1536" height="1024" alt="Original GPT Image 2 illustration of a fictional cataloguing desk: blank index cards, an unlabelled contour map, a brass ruler, and a small clay pigment dish.">
+        <figcaption>Concept art · GPT Image 2 · unofficial asset, not evidence</figcaption>
+      </figure>
+      <div class="bars">
+        <div class="bar-row"><span>Charts</span><div class="track"><div class="fill" style="width:72%"></div></div><output>072</output></div>
+        <div class="bar-row"><span>Letters</span><div class="track"><div class="fill" style="width:48%"></div></div><output>048</output></div>
+        <div class="bar-row"><span>Maps</span><div class="track"><div class="fill" style="width:61%"></div></div><output>061</output></div>
+        <div class="bar-row"><span>Photographs</span><div class="track"><div class="fill" style="width:35%"></div></div><output>035</output></div>
+        <p class="note">Every figure on this slide is invented for the study. The accent bar colour follows the active mode.</p>
+      </div>
+    </div>
+    <div class="foot"><span>Evidence · Paper page</span><span>All data fictional</span></div>
+  </section>
+
+  <!-- 05 · Grammar -->
+  <section class="slide dark grammar-slide" data-slide="4">
+    <img class="art" src="assets/noon.webp" alt="" aria-hidden="true"><div class="wash" aria-hidden="true"></div>
+    <div class="chrome"><span>Tidewater · Grammar</span><span>05 / 06</span></div>
+    <p class="statement">The archive is a <em>grammar</em>, not a colour scheme.</p>
+    <ul>
+      <li><span class="n">01</span>Date or version line, tracked sans</li>
+      <li><span class="n">02</span>Numbered index with dot leaders</li>
+      <li><span class="n">03</span>Asymmetric serif title, one focal point</li>
+      <li><span class="n">04</span>One solid mode field, no gradients</li>
+      <li><span class="n">05</span>Narrow reading column, wide evidence</li>
+      <li><span class="n">06</span>Source and status at the boundary</li>
+    </ul>
+    <div class="foot"><span>Grammar · Six rules</span><span>From SKILL.md §4</span></div>
+  </section>
+
+  <!-- 06 · Colophon -->
+  <section class="slide dark closing" data-slide="5">
+    <img class="art" src="assets/noon.webp" alt="" aria-hidden="true"><div class="wash" aria-hidden="true"></div>
+    <div class="chrome"><span>Tidewater · Colophon</span><span>06 / 06</span></div>
+    <p class="fin">Filed under <em>style studies</em></p>
+    <p class="credits"><b>[06] Colophon.</b> Demonstration deck for the open-source skill <i>claude-fable-5-1-theme-workflow</i>. Colour states are an independent extraction from publicly visible page behaviour; no Anthropic fonts, logos, illustrations, or source code are used. All names, figures, and the Tidewater Archive itself are fictional. Hero imagery: original GPT Image 2 concept art — unofficial assets, not evidence. Type set in Georgia, Arial, and ui-monospace fallbacks.</p>
+    <div class="foot"><span>Closing · Colophon</span><span>Not affiliated with Anthropic</span></div>
+  </section>
+
+</div>
+
+<div class="theme-dots" role="group" aria-label="Color theme">
+  <button type="button" data-mode="noon" aria-pressed="true" aria-label="Noon theme"></button>
+  <button type="button" data-mode="night" aria-pressed="false" aria-label="Night theme"></button>
+  <button type="button" data-mode="morning" aria-pressed="false" aria-label="Morning theme"></button>
+</div>
+<div class="pager" role="group" aria-label="Slides"></div>
+
+<script>
+(function () {
+  var deck = document.getElementById('deck');
+  var slides = Array.prototype.slice.call(deck.querySelectorAll('.slide'));
+  var dots = Array.prototype.slice.call(document.querySelectorAll('.theme-dots button'));
+  var arts = Array.prototype.slice.call(document.querySelectorAll('.art'));
+  var pager = document.querySelector('.pager');
+  var current = 0;
+
+  var MODE_ART = { noon: 'assets/noon.webp', night: 'assets/night.webp', morning: 'assets/morning.webp' };
+  var MODE_COPY = {
+    noon:    ['Noon · the public record',   'Open, calm, scan-friendly. The reading you give a stranger at midday.'],
+    night:   ['Night · the technical annex','Systems, risk, and things checked after dark. The reading you keep for yourself.'],
+    morning: ['Morning · the archive proper','Dates, paper, and the people who filed the documents. The slow reading.']
+  };
+
+  /* pager dots */
+  slides.forEach(function (_, i) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+    b.addEventListener('click', function () { go(i); });
+    pager.appendChild(b);
+  });
+  var pageDots = Array.prototype.slice.call(pager.children);
+
+  function go(i) {
+    i = Math.max(0, Math.min(slides.length - 1, i));
+    deck.scrollTo({ left: i * deck.clientWidth, behavior: 'auto' });
+  }
+  function sync() {
+    var i = Math.round(deck.scrollLeft / deck.clientWidth);
+    if (i === current) return;
+    current = i;
+    pageDots.forEach(function (d, j) { d.setAttribute('aria-current', String(j === i)); });
+    var dark = slides[i].classList.contains('dark');
+    document.body.classList.toggle('dark-on', dark);
+  }
+  deck.addEventListener('scroll', sync, { passive: true });
+  window.addEventListener('resize', function () { go(current); });
+
+  /* keyboard */
+  window.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { go(current + 1); e.preventDefault(); }
+    if (e.key === 'ArrowLeft'  || e.key === 'PageUp')                   { go(current - 1); e.preventDefault(); }
+    if (e.key === 'Home') { go(0); e.preventDefault(); }
+    if (e.key === 'End')  { go(slides.length - 1); e.preventDefault(); }
+  });
+
+  /* index links */
+  document.querySelectorAll('[data-go]').forEach(function (a) {
+    a.addEventListener('click', function (e) { e.preventDefault(); go(parseInt(a.dataset.go, 10)); });
+  });
+
+  /* theme switching */
+  dots.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var mode = btn.dataset.mode;
+      document.body.dataset.theme = mode;
+      arts.forEach(function (img) { img.src = MODE_ART[mode]; });
+      var copy = MODE_COPY[mode];
+      document.getElementById('mode-name').textContent = copy[0];
+      document.getElementById('mode-desc').textContent = copy[1];
+      dots.forEach(function (b) { b.setAttribute('aria-pressed', String(b === btn)); });
+    });
+  });
+
+  /* wheel: vertical wheel pages horizontally */
+  deck.addEventListener('wheel', function (e) {
+    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+      deck.scrollLeft += e.deltaY;
+      e.preventDefault();
+    }
+  }, { passive: false });
+
+  sync();
+  pageDots[0].setAttribute('aria-current', 'true');
+})();
+</script>
+</body>
+</html>

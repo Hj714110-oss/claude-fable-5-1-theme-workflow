@@ -6,7 +6,7 @@ An agent skill that distills the **publicly visible colour states** of Anthropic
 
 ## Screenshots
 
-The demo below is [`examples/theme-lab.html`](examples/theme-lab.html) — one fictional article rendered in all three modes. The hero is a full-bleed mode artwork under a colour-field wash; the overlaid grid (date / title / standfirst / index) never moves when modes switch.
+**Theme lab** — [`examples/theme-lab.html`](examples/theme-lab.html), one fictional article rendered in all three modes. The hero is a full-bleed mode artwork under a colour-field wash; the overlaid grid (date / title / standfirst / index) never moves when modes switch.
 
 | Noon | Night | Morning |
 |---|---|---|
@@ -15,6 +15,12 @@ The demo below is [`examples/theme-lab.html`](examples/theme-lab.html) — one f
 | Evidence section | Mobile |
 |---|---|
 | ![Evidence section](docs/screenshots/evidence-desktop.webp) | ![Mobile](docs/screenshots/noon-mobile.webp) |
+
+**Archive deck** — [`examples/theme-deck.html`](examples/theme-deck.html), a six-slide single-file HTML deck with horizontal paging (keyboard / wheel / touch / pager dots / index jumps). Mode switching swaps the full-bleed artwork, the colour field, and the accents live.
+
+| Cover · Noon | Modes · Night | Evidence · paper page |
+|---|---|---|
+| ![Deck cover, Noon](docs/screenshots/deck-cover-noon.webp) | ![Deck modes, Night](docs/screenshots/deck-modes-night.webp) | ![Deck evidence](docs/screenshots/deck-evidence.webp) |
 
 ## Contents
 
@@ -27,10 +33,12 @@ references/
   output-matrix.md                Which mode fits which output; recommended recipes
   image-prompts.md                GPT Image 2 prompt recipes + quality gate for mode artwork
   layered-ambient-glass.md        Optional route: neutral paper + transparent ambient plates + local glass
+  deck-html.md                    Single-file HTML deck route: paging contract, pitfalls, acceptance
 examples/
-  theme-lab.html                  Self-contained three-mode demo (fictional content)
+  theme-lab.html                  Self-contained three-mode editorial page (fictional content)
+  theme-deck.html                 Six-slide horizontal-paging deck, theme-switchable (fictional content)
   assets/*.webp                   Original GPT Image 2 concept art + one editorial illustration
-docs/screenshots/                 Verification screenshots of the demo
+docs/screenshots/                 Verification screenshots of both demos
 ```
 
 ## Usage
@@ -41,7 +49,7 @@ Copy the skill folder into any agent-skill-compatible loader (e.g. Claude Code `
 - “Make an archive-style deck in the Fable 5.1 night style”
 - “把这页官网风格迁移成 morning 编辑长文”
 
-Open `examples/theme-lab.html` directly in a browser to try the demo; the theme switcher in the header swaps the mode tokens and the mode artwork without changing the DOM structure.
+Open `examples/theme-lab.html` or `examples/theme-deck.html` directly in a browser to try the demos; the theme switcher swaps the mode tokens and the mode artwork without changing the DOM structure.
 
 ## What the skill enforces
 
@@ -61,9 +69,20 @@ The public page loads proprietary typefaces (Anthropic Sans/Serif/Mono, Copernic
 
 `examples/assets/*.webp` are original images generated with GPT Image 2 from the prompt recipes in `references/image-prompts.md`. They contain no text, logos, people, or brand marks, are not official Anthropic material, and are not evidence of anything. Regenerate your own with the same recipes if you prefer.
 
-## 中文摘要
+## 中文介绍
 
-这是一个从 Anthropic Claude Fable 5.1 官网**公开可见的三种色彩状态**（Noon 蓝 / Night 深蓝黑 / Morning 暖白）提炼出的可迁移设计系统 Skill，用于档案式网页、研究报告、16:9 Deck、数据叙事和社交卡片。仓库不含任何官方字体、Logo、插画或页面源码，示例内容全部虚构；示例图均为 GPT Image 2 原创概念图（非官方资产、不作为证据）。详细提炼记录见 `references/source-audit.md`。
+这是一个把 Anthropic Claude Fable 5.1 官网**公开可见的三种色彩状态**——Noon（正午蓝）、Night（深蓝黑）、Morning（暖白 / 灰紫）——提炼成可复用设计系统的 Agent Skill，适用于档案式编辑页面、研究报告、数据叙事、时间线，以及**单文件 HTML 翻页演讲稿（deck）**和社交 / 打印卡片。
+
+**仓库里有什么**
+
+- `SKILL.md`：完整工作流——三状态色彩 tokens、档案语法（日期行 / 编号目录 / 点状 leader / 非对称标题 / 单色场）、输出路由（编辑页 / 固定舞台 deck / 单文件 HTML 翻页 deck / 数据叙事 / 卡片）、生图工作流、分层氛围玻璃路由、Anti-slop 门禁与验收清单。
+- `references/`：来源审计、tokens JSON、组件配方、输出矩阵、GPT Image 2 提示词配方、分层玻璃材质规范，以及 `deck-html.md` 单文件翻页 deck 的机制契约与踩坑清单。
+- `examples/`：两个自包含演示——`theme-lab.html`（三主题编辑长页，全幅 hero 图 + 色场罩）和 `theme-deck.html`（六页横向翻页 deck，键盘 / 滚轮 / 触屏 / 圆点翻页，主题实时切换）。演示内容全部虚构；配图均为 GPT Image 2 原创概念图（非官方资产、不作为证据）。
+- `docs/screenshots/`：桌面 1920×1080 与移动端 390×844 的真实验收截图。
+
+**设计要点**：一份内容三种读法，切换只换 tokens 与氛围图，信息架构永不动；大面积单色场 + 640px 阅读列 + 880px 证据区；深色页是深蓝黑而非纯黑，纸面页是暖白而非空白模板；禁止紫蓝渐变、玻璃卡片墙和「居中大标题 + 三卡片 + CTA」模板。
+
+**边界声明**：本仓库不含任何 Anthropic 字体、Logo、插画或页面源码，为独立的风格研究（style study），与 Anthropic 无隶属或背书关系。字体默认回退到 Georgia / Arial / ui-monospace 系统栈。MIT 协议。
 
 ## License
 

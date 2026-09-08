@@ -6,7 +6,10 @@ aliases:
   - Claude 5.1 archive style
   - Claude archive editorial
   - 蓝黑暖白档案风
-version: 1.0.0
+  - Fable archive deck
+  - Fable HTML deck
+  - 单文件翻页PPT
+version: 1.1.0
 source: https://www.anthropic.com/claude-fable-and-mythos-5-1
 description: >
   从 Anthropic 官方 Claude Fable 5.1 页面提炼 Noon（蓝）、Night（深蓝黑）和 Morning（暖白/灰紫）三种公开视觉状态，
@@ -142,6 +145,10 @@ archive grammar = <index + date + leader lines>, signature = <一个可复述的
 - 封面和章节页使用 mode hero 色，正文页使用 `#FAF9F5` 纸面；Night deck 可让技术页保持深色，但必须保留读数；
 - 统一页码、日期、leader line、细规则；页面之间改变构图家族（hero / split / chart-led / timeline / editorial），不要每页复制卡片网格；
 - 需可编辑 PPTX 时使用原生生成器或已授权的导出器；HTML deck 不能冒充可编辑 PPTX。
+
+#### B2. 单文件 HTML 翻页 deck（不要可编辑 PPTX 时）
+
+用户要「网页版 PPT / 翻页演讲稿」时，走单文件横向翻页 deck：`100vw × 100svh` 整页 snap、键盘/滚轮/触屏/页码圆点四种翻页、chrome 栏目行 + foot 页脚、深色页全幅 mode 图 + 色场罩 + 反白文字、纸面页放证据与图表，主题切换只改 tokens 与图。机制契约、字号阶梯和踩坑清单（负 z-index 隔离、深色页 accent 不可见、img height 属性等）见 `references/deck-html.md`，参考实现 `examples/theme-deck.html`。
 
 ### C. Research report / data story
 
