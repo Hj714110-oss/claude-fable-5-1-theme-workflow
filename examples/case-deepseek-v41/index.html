@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DeepSeek V4.1 Flash · 两天窗口 — Archive Deck</title>
+<style>
+  :root {
+    --paper: #FAF9F5; --paper-2: #F5F4ED;
+    --ink: #141413; --ink-2: #3D3D3A;
+    --cloud: #D1CFC5; --cloud-dark: #87867F;
+    --clay: #D97757; --focus: #2C84DB;
+  }
+  [data-theme="noon"]    { --hero:#749BD0; --mode-accent:#2F5D8A; --art-pos:62% center; --art-pos-mobile:66% center; }
+  [data-theme="night"]   { --hero:#27314B; --mode-accent:#27314B; --art-pos:40% center; --art-pos-mobile:36% center; }
+  [data-theme="morning"] { --hero:#AAA9BC; --mode-accent:#8A6D5C; --art-pos:44% center; --art-pos-mobile:40% center; }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { height:100%; }
+  body {
+    background:var(--paper); color:var(--ink);
+    font-family:Arial,"Helvetica Neue","PingFang SC","Hiragino Sans GB",sans-serif;
+    -webkit-font-smoothing:antialiased; overflow:hidden;
+  }
+  :focus-visible { outline:2px solid var(--focus); outline-offset:3px; border-radius:2px; }
+
+  #deck {
+    display:flex; height:100svh; overflow-x:auto; overflow-y:hidden;
+    scroll-snap-type:x mandatory; scroll-behavior:auto; scrollbar-width:none;
+  }
+  #deck::-webkit-scrollbar { display:none; }
+  .slide {
+    flex:0 0 100vw; width:100vw; height:100svh;
+    scroll-snap-align:start; position:relative; isolation:isolate;
+    padding:calc(56px + 3vh) clamp(24px,6vw,96px) calc(56px + 3vh);
+    display:flex; flex-direction:column;
+  }
+  .slide.dark { background:var(--hero); color:var(--paper); }
+  .slide.paper { background:var(--paper); color:var(--ink); }
+
+  .chrome, .foot {
+    position:absolute; left:clamp(24px,6vw,96px); right:clamp(24px,6vw,96px);
+    display:flex; justify-content:space-between; gap:16px;
+    font:11px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;
+    letter-spacing:.14em; text-transform:uppercase;
+  }
+  .chrome { top:calc(56px + 1vh); opacity:.72; }
+  .foot { bottom:3vh; opacity:.6; }
+  .dark .chrome, .dark .foot { color:var(--paper); }
+
+  .art { position:absolute; inset:0; z-index:-2; width:100%; height:100%;
+         object-fit:cover; object-position:var(--art-pos); }
+  .wash { position:absolute; inset:0; z-index:-1; background:var(--hero); opacity:.84; }
+
+  .serif { font-family:Georgia,"Iowan Old Style","Songti SC","Times New Roman",serif; }
+  .mono { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }
+
+  /* S1 cover */
+  .cover .date { font-size:13px; letter-spacing:.22em; opacity:.85; }
+  .cover h1 {
+    margin-top:auto; font-weight:400;
+    font-size:clamp(44px,7.2vw,104px); line-height:1.04; letter-spacing:-.01em;
+    text-shadow:0 2px 18px rgba(20,20,19,.18);
+  }
+  .cover h1 em { display:block; font-style:italic; margin-left:.7em; }
+  .cover .deck-sub { margin-top:26px; font-size:16px; line-height:1.7; opacity:.92; max-width:56ch; }
+  .cover .badge {
+    display:inline-flex; gap:10px; align-items:center; margin-top:30px;
+    font:11px/1 ui-monospace,Menlo,monospace; letter-spacing:.14em; text-transform:uppercase;
+    border:1px solid rgba(250,249,245,.45); padding:9px 14px; opacity:.9;
+  }
+
+  /* S2 toc */
+  .toc { margin:auto; width:min(820px,100%); }
+  .toc .toc-date { font-size:12px; letter-spacing:.2em; text-transform:uppercase; opacity:.72; margin-bottom:32px; }
+  .toc a {
+    display:flex; align-items:baseline; gap:18px; padding:13px 0;
+    color:inherit; text-decoration:none;
+  }
+  .toc .n { font:12px/1 ui-monospace,Menlo,monospace; opacity:.75; flex:none; }
+  .toc .t { font-family:Georgia,"Songti SC",serif; font-size:clamp(19px,2.6vw,28px); flex:none; }
+  .toc .leader { flex:1; border-bottom:1px dotted rgba(250,249,245,.4); transform:translateY(-5px); }
+  .toc .d { font:10px/1.5 ui-monospace,Menlo,monospace; opacity:.6; text-transform:uppercase; letter-spacing:.1em; flex:none; }
+
+  /* S3 event */
+  .event .k { font:12px/1 ui-monospace,Menlo,monospace; letter-spacing:.18em; text-transform:uppercase; margin-bottom:18px; }
+  .dark .event .k { color:var(--paper); opacity:.85; }
+  .event h2 { font-family:Georgia,"Songti SC",serif; font-weight:400; font-size:clamp(32px,4.6vw,58px); line-height:1.12; max-width:22ch; }
+  .event-grid { margin-top:auto; margin-bottom:auto; display:grid; grid-template-columns:repeat(3,1fr); border-top:1px solid rgba(250,249,245,.35); }
+  .event-cell { padding:22px 22px 0 0; border-right:1px solid rgba(250,249,245,.25); }
+  .event-cell + .event-cell { padding-left:22px; }
+  .event-cell:last-child { border-right:0; }
+  .event-cell b { display:block; font:400 clamp(26px,3vw,40px)/1.05 Georgia,"Songti SC",serif; }
+  .event-cell span { display:block; margin-top:8px; font-size:12px; line-height:1.6; opacity:.8; }
+
+  /* paper pages shared */
+  .paper .k2 { font:12px/1 ui-monospace,Menlo,monospace; letter-spacing:.18em; text-transform:uppercase; color:var(--clay); margin-bottom:16px; }
+  .paper h2 { font-family:Georgia,"Songti SC",serif; font-weight:400; font-size:clamp(30px,4vw,46px); margin-bottom:10px; }
+  .paper .lead { font-size:15px; color:var(--ink-2); max-width:60ch; }
+
+  /* S4 speed */
+  .speed-body { margin-top:auto; margin-bottom:auto; display:grid; grid-template-columns:minmax(0,7fr) minmax(0,5fr); gap:clamp(24px,4vw,64px); align-items:center; }
+  .speed-num { font:400 clamp(88px,13vw,180px)/0.95 Georgia,serif; color:var(--ink); }
+  .speed-num small { font-size:.22em; letter-spacing:.06em; color:var(--ink-2); }
+  .bars .bar-row { display:grid; grid-template-columns:120px 1fr 60px; gap:14px; align-items:center; margin-bottom:16px; font-size:13px; }
+  .bars .track { height:20px; background:var(--cloud); }
+  .bars .fill { height:100%; background:var(--mode-accent); }
+  .bars .fill.hot { background:var(--clay); }
+  .bars output { font:12px/1 ui-monospace,Menlo,monospace; text-align:right; color:var(--ink-2); }
+  .bars .note { margin-top:20px; font-size:13px; color:var(--ink-2); max-width:44ch; }
+
+  /* S5 arch */
+  .arch h2 { font-family:Georgia,"Songti SC",serif; font-weight:400; font-size:clamp(30px,4.2vw,52px); line-height:1.15; max-width:24ch; }
+  .arch h2 em { font-style:italic; }
+  .arch-cols { margin-top:auto; margin-bottom:auto; display:grid; grid-template-columns:1fr 1fr; gap:clamp(24px,4vw,64px); }
+  .arch-cols .col { border-top:1px solid rgba(250,249,245,.35); padding-top:20px; }
+  .arch-cols h3 { font:12px/1 ui-monospace,Menlo,monospace; letter-spacing:.16em; text-transform:uppercase; opacity:.8; margin-bottom:16px; font-weight:400; }
+  .arch-cols p { font-size:14px; line-height:1.75; opacity:.92; }
+
+  /* S6 pricing table */
+  .ptable { margin-top:auto; margin-bottom:auto; width:100%; max-width:960px; }
+  .ptable .row { display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr; gap:12px; padding:14px 0; border-bottom:1px solid var(--cloud); font-size:14px; align-items:baseline; }
+  .ptable .row.head { font:11px/1.4 ui-monospace,Menlo,monospace; letter-spacing:.12em; text-transform:uppercase; color:var(--cloud-dark); border-bottom:1px solid var(--ink); }
+  .ptable .row .v { font:14px/1 ui-monospace,Menlo,monospace; text-align:right; }
+  .ptable .row .eq { color:var(--clay); font:12px/1 ui-monospace,Menlo,monospace; letter-spacing:.08em; }
+  .ptable .note { margin-top:22px; font-size:13px; color:var(--ink-2); max-width:52ch; }
+
+  /* S7 timeline */
+  .tl { margin-top:auto; margin-bottom:auto; position:relative; max-width:1080px; }
+  .tl .spine { position:absolute; left:0; right:0; top:26px; border-top:1px solid var(--cloud); }
+  .tl ol { list-style:none; display:grid; grid-template-columns:repeat(6,1fr); gap:0 clamp(16px,2vw,32px); }
+  .tl li { padding-top:52px; position:relative; }
+  .tl li::before { content:''; position:absolute; top:21px; left:0; width:11px; height:11px; border-radius:50%; background:var(--paper); border:1px solid var(--ink); }
+  .tl li.hot::before { background:var(--clay); border-color:var(--clay); }
+  .tl .d { font:11px/1 ui-monospace,Menlo,monospace; letter-spacing:.08em; color:var(--cloud-dark); }
+  .tl .t { font-family:Georgia,"Songti SC",serif; font-size:16px; margin-top:10px; line-height:1.4; }
+  .tl .s { font-size:12px; color:var(--ink-2); margin-top:8px; line-height:1.6; }
+  .tl li.hot .d { color:var(--clay); font-weight:700; }
+
+  /* S8 concurrency statement */
+  .conc .statement { font-family:Georgia,"Songti SC",serif; font-weight:400; font-size:clamp(32px,4.8vw,60px); line-height:1.2; max-width:26ch; margin:auto 0; }
+  .conc .statement em { font-style:italic; }
+  .conc .vs { display:flex; gap:clamp(28px,5vw,72px); align-items:baseline; margin-top:44px; }
+  .conc .vs b { font:400 clamp(48px,7vw,96px)/1 Georgia,serif; }
+  .conc .vs span { display:block; font:11px/1.6 ui-monospace,Menlo,monospace; letter-spacing:.12em; text-transform:uppercase; opacity:.72; margin-top:12px; }
+  .conc .vs .dim { opacity:.45; }
+
+  /* S9 question */
+  .ask { margin:auto; max-width:56ch; text-align:left; }
+  .ask .q-mark { font:400 clamp(60px,8vw,110px)/1 Georgia,serif; font-style:italic; opacity:.9; }
+  .ask p { font-family:Georgia,"Songti SC",serif; font-size:clamp(26px,3.2vw,42px); line-height:1.3; margin-top:24px; }
+  .ask .sub { font:13px/1.8 Arial,"PingFang SC",sans-serif; opacity:.85; margin-top:28px; max-width:52ch; }
+
+  /* S10 sources */
+  .src { margin:auto; width:min(860px,100%); }
+  .src h2 { font-family:Georgia,"Songti SC",serif; font-weight:400; font-size:clamp(28px,3.6vw,42px); margin-bottom:36px; }
+  .src ol { list-style:none; }
+  .src li { display:flex; gap:16px; align-items:baseline; padding:12px 0; border-bottom:1px dotted rgba(250,249,245,.35); font-size:13px; line-height:1.6; }
+  .src .n { font:11px/1 ui-monospace,Menlo,monospace; opacity:.7; flex:none; }
+  .src .w { opacity:.92; }
+  .src .u { font:11px/1.5 ui-monospace,Menlo,monospace; opacity:.55; margin-left:auto; text-align:right; flex:none; max-width:44%; word-break:break-all; }
+  .src .fine { margin-top:36px; font-size:12px; line-height:1.8; opacity:.75; }
+
+  .theme-dots { position:fixed; left:clamp(16px,3vw,32px); bottom:20px; z-index:20; display:flex; gap:8px; }
+  .theme-dots button { width:19px; height:19px; padding:0; border-radius:50%; cursor:pointer; border:1px solid rgba(128,128,128,.6); }
+  .theme-dots button[data-mode="noon"] { background:#7EA9DE; }
+  .theme-dots button[data-mode="night"] { background:#1A2237; }
+  .theme-dots button[data-mode="morning"] { background:#DCC4B3; }
+  .theme-dots button[aria-pressed="true"] { outline:2px solid var(--ink); outline-offset:2px; }
+  .dark-on .theme-dots button[aria-pressed="true"] { outline-color:#FAF9F5; }
+  .pager { position:fixed; right:clamp(16px,3vw,32px); bottom:22px; z-index:20; display:flex; gap:6px; }
+  .pager button { width:8px; height:8px; border-radius:50%; border:1px solid rgba(128,128,128,.7); background:transparent; padding:0; cursor:pointer; }
+  .pager button[aria-current="true"] { background:var(--ink); border-color:var(--ink); }
+  .dark-on .pager button[aria-current="true"] { background:#FAF9F5; border-color:#FAF9F5; }
+
+  @media (max-width:760px) {
+    .slide { padding:calc(56px + 3vh) 24px calc(72px + 3vh); }
+    .art { object-position:var(--art-pos-mobile); }
+    .chrome { left:24px; right:24px; font-size:10px; }
+    .foot { display:none; }
+    .event-grid { grid-template-columns:1fr; border-top:0; gap:0; }
+    .event-cell { border-right:0; border-top:1px solid rgba(250,249,245,.25); padding:18px 0 0 0; margin-top:18px; }
+    .speed-body { grid-template-columns:1fr; gap:36px; }
+    .arch-cols { grid-template-columns:1fr; gap:28px; }
+    .ptable .row { grid-template-columns:1.2fr .8fr .8fr; font-size:12px; }
+    .ptable .row .v:last-child, .ptable .row .eq { display:none; }
+    .tl { overflow-x:auto; padding-bottom:12px; }
+    .tl ol { grid-template-columns:repeat(6,minmax(150px,1fr)); }
+    .src li { flex-wrap:wrap; }
+    .src .u { margin-left:0; width:100%; max-width:100%; text-align:left; }
+    .theme-dots { bottom:16px; } .pager { bottom:20px; }
+  }
+  @media (prefers-reduced-motion:reduce) { #deck { scroll-snap-type:none; } }
+</style>
+</head>
+<body data-theme="night">
+
+<div id="deck">
+
+  <!-- 01 封面 -->
+  <section class="slide dark cover" data-slide="0">
+    <img class="art" src="assets/night.webp" alt="" aria-hidden="true"><div class="wash" aria-hidden="true"></div>
+    <div class="chrome"><span>DeepSeek · Field Notes</span><span>01 / 10</span></div>
+    <p class="date">2026 . 09 . 08 · 突发内测</p>
+    <h1 class="serif">两天窗口<em>V4.1 Flash</em></h1>
+    <p class="deck-sub">没有发布会，没有预热海报。9 月 8 日下午，DeepSeek 在官方交流群悄悄放出了 V4.1 Flash「中间版本」内测——9 月 10 日自动到期，测试窗口只有两天。</p>
+    <span class="badge mono">Intermediate beta · expires 0910</span>
+    <div class="foot"><span>Cover · Hero field</span><span>Real news · archived 2026-09-09</span></div>
+  </section>
+
+  <!-- 02 目录 -->
+  <section class="slide dark" data-slide="1">
+    <img class="art" src="assets/night.webp" alt="" aria-hidden="true"><div class="wash" aria-hidden="true"></div>
+    <div class="chrome"><span>DeepSeek · Contents</span><span>02 / 10</span></div>
+    <nav class="toc" aria-label="目录">
+      <p class="toc-date">索引 · 十页速览</p>
+      <ol style="list-style:none">
+        <li><a href="#" data-go="2"><span class="n">[03]</span><span class="t">发生了什么</span><span class="leader"></span><span class="d">event</span></a></li>
+        <li><a href="#" data-go="3"><span class="n">[04]</span><span class="t">速度实测</span><span class="leader"></span><span class="d">evidence</span></a></li>
+        <li><a href="#" data-go="4"><span class="n">[05]</span><span class="t">新架构 × 原生多模态</span><span class="leader"></span><span class="d">architecture</span></a></li>
+        <li><a href="#" data-go="5"><span class="n">[06]</span><span class="t">计费不变</span><span class="leader"></span><span class="d">pricing</span></a></li>
+        <li><a href="#" data-go="6"><span class="n">[07]</span><span class="t">四十天五步</span><span class="leader"></span><span class="d">timeline</span></a></li>
+        <li><a href="#" data-go="7"><span class="n">[08]</span><span class="t">20 并发的暗示</span><span class="leader"></span><span class="d">limits</span></a></li>
+        <li><a href="#" data-go="8"><span class="n">[09]</span><span class="t">问卷里的野心</span><span class="leader"></span><span class="d">the question</span></a></li>
+        <li><a href="#" data-go="9"><span class="n">[10]</span><span class="t">来源与边界</span><span class="leader"></span><span class="d">sources</span></a></li>
+      </ol>
+    </nav>
+    <div class="foot"><span>Index · Dot leaders</span><span>点击条目可跳页</span></div>
+  </section>
+
+  <!-- 03 发生了什么 -->
+  <section class="slide dark event" data-slide="2">
+    <img class="art" src="assets/night.webp" alt="" aria-hidden="true"><div class="wash" aria-hidden="true"></div>
+    <div class="chrome"><span>DeepSeek · Event</span><span>03 / 10</span></div>
+    <p class="k">[03] · 9 月 8 日下午 · 官方交流群</p>
+    <h2>一个只活两天的模型，<br>换上了全新的骨架</h2>
+    <div class="event-grid">
+      <div class="event-cell"><b>2 天</b><span>测试窗口。模型名里直接写着 expires-on-0910，9 月 10 日自动下线。</span></div>
+      <div class="event-cell"><b>0 改动</b><span>base_url 不变，把模型名换成 deepseek-v4.1-flash-expires-on-0910 即可调用。</span></div>
+      <div class="event-cell"><b>1 次重构</b><span>官方明确：采用新的模型结构——V4 系列沿用旧架构，这是架构级迭代，不是调参。</span></div>
+    </div>
+    <div class="foot"><span>Event · Three facts</span><span>官方群通知 · 多家媒体报道</span></div>
+  </section>
+
+  <!-- 04 速度 -->
+  <section class="slide paper" data-slide="3">
+    <div class="chrome"><span>DeepSeek · Evidence</span><span>04 / 10</span></div>
+    <p class="k2">[04] · 开发者实测输出速度</p>
+    <h2>快，而且更快了</h2>
+    <div class="speed-body">
+      <div><div class="speed-num">507<small> tokens/s</small></div>
+      <p class="lead" style="margin-top:18px">X 上开发者分享的最高实测输出速度。普遍报告超过 300 tokens/s——V4 Flash 本就以速度见长，V4.1 Flash 把这个优势继续往前推。</p></div>
+      <div class="bars">
+        <div class="bar-row"><span>最高实测</span><div class="track"><div class="fill hot" style="width:100%"></div></div><output>507</output></div>
+        <div class="bar-row"><span>鹈鹕骑车 SVG</span><div class="track"><div class="fill" style="width:65%"></div></div><output>328</output></div>
+        <div class="bar-row"><span>普遍水平</span><div class="track"><div class="fill" style="width:59%"></div></div><output>300+</output></div>
+        <p class="note">数字来自开发者自发分享的非正式基准（X / 社群），非官方跑分；仅供体感参考。</p>
+      </div>
+    </div>
+    <div class="foot"><span>Evidence · Community benchmarks</span><span>非官方实测</span></div>
+  </section>
+
+  <!-- 05 架构 -->
+  <section class="slide dark arch" data-slide="4">
+    <img class="art" src="assets/night.webp" alt="" aria-hidden="true"><div class="wash" aria-hidden="true"></div>
+    <div class="chrome"><span>DeepSeek · Architecture</span><span>05 / 10</span></div>
+    <p class="k">[05] · 官方表述</p>
+    <h2>多模态不再是<em>外挂</em>，<br>而是骨架的一部分</h2>
+    <div class="arch-cols">
+      <div class="col">
+        <h3>V4 Flash · 旧架构</h3>
+        <p>图文输入依赖插件式的 Vision 扩展包——8 月 21 日上线的 V4-Flash-Vision-Exp 就是这条路：能力是「接上去」的，文本、图像各走各的门。</p>
+      </div>
+      <div class="col">
+        <h3>V4.1 Flash · 新架构</h3>
+        <p>文本、图像、音频输入统一处理，原生多模态。官方同时强调「能力更强、速度更快、成本更低」——架构重构的红利，一次给齐。</p>
+      </div>
+    </div>
+    <div class="foot"><span>Architecture · Native multimodal</span><span>官方文档表述</span></div>
+  </section>
+
+  <!-- 06 计费 -->
+  <section class="slide paper" data-slide="5">
+    <div class="chrome"><span>DeepSeek · Pricing</span><span>06 / 10</span></div>
+    <p class="k2">[06] · 内测期计费 · 与 V4 Flash 完全一致</p>
+    <h2>新架构，旧账单</h2>
+    <div class="ptable">
+      <div class="row head"><span>每百万 tokens</span><span class="v">缓存命中输入</span><span class="v">未命中输入</span><span class="v">输出</span></div>
+      <div class="row"><span>错峰时段</span><span class="v">¥0.05</span><span class="v">¥1.5</span><span class="v">¥4.5</span></div>
+      <div class="row"><span>高峰时段</span><span class="v">¥0.1</span><span class="v">¥3</span><span class="v">¥9</span></div>
+      <div class="row"><span>内测加价</span><span class="eq">无</span><span class="eq">无</span><span class="eq">无</span></div>
+    </div>
+    <p class="lead" style="margin-top:8px">计费与 deepseek-v4-flash 逐项对齐，没有测试溢价。换架构不换价签——这在 DeepSeek 的更新史上已经成为惯例。</p>
+    <div class="foot"><span>Pricing · Identical to V4 Flash</span><span>单位：人民币 / 百万 tokens</span></div>
+  </section>
+
+  <!-- 07 时间线 -->
+  <section class="slide paper" data-slide="6">
+    <div class="chrome"><span>DeepSeek · Timeline</span><span>07 / 10</span></div>
+    <p class="k2">[07] · 2026 年 4 → 9 月</p>
+    <h2>四十天，五步棋</h2>
+    <div class="tl">
+      <div class="spine" aria-hidden="true"></div>
+      <ol>
+        <li><span class="d">04 · 24</span><div class="t">V4 Preview 开源</div><p class="s">Pro 1.6T/49B 激活 · Flash 284B/13B · 1M 上下文 · MIT</p></li>
+        <li><span class="d">07 · 31</span><div class="t">V4 Flash 公测</div><p class="s">生产 API 开放，速度型主力就位</p></li>
+        <li><span class="d">08 · 13</span><div class="t">V4 Pro 上线</div><p class="s">生产 API + Harness v0.1 同步开源</p></li>
+        <li><span class="d">08 · 21</span><div class="t">Vision Exp</div><p class="s">V4-Flash-Vision-Exp，外挂式视觉理解</p></li>
+        <li class="hot"><span class="d">09 · 08</span><div class="t">V4.1 Flash 内测</div><p class="s">新架构 · 原生多模态 · 两天窗口</p></li>
+        <li><span class="d">09 · 10</span><div class="t">自动下线</div><p class="s">窗口关闭，等下一声发令枪</p></li>
+      </ol>
+    </div>
+    <div class="foot"><span>Timeline · Cadence</span><span>密集更新节奏仍在加速</span></div>
+  </section>
+
+  <!-- 08 并发暗示 -->
+  <section class="slide dark conc" data-slide="7">
+    <img class="art" src="assets/night.webp" alt="" aria-hidden="true"><div class="wash" aria-hidden="true"></div>
+    <div class="chrome"><span>DeepSeek · Limits</span><span>08 / 10</span></div>
+    <p class="k">[08] · 一个容易忽略的限制</p>
+    <p class="statement">20 并发，只够验证功能，<br>不够跑<em>生产</em>。</p>
+    <div class="vs">
+      <div><b>20</b><span>V4.1 Flash 内测</span></div>
+      <div class="dim"><b>500</b><span>V4 Pro 正式</span></div>
+      <div class="dim"><b>2500</b><span>V4 Flash 正式</span></div>
+    </div>
+    <div class="foot"><span>Limits · Per account</span><span>定位：功能验证而非压力测试</span></div>
+  </section>
+
+  <!-- 09 问卷野心 -->
+  <section class="slide dark" data-slide="8">
+    <img class="art" src="assets/night.webp" alt="" aria-hidden="true"><div class="wash" aria-hidden="true"></div>
+    <div class="chrome"><span>DeepSeek · The Question</span><span>09 / 10</span></div>
+    <div class="ask">
+      <div class="q-mark serif">?</div>
+      <p>「V4.1 Flash 能否全面替换线上 V4 Pro？」</p>
+      <p class="sub">—— DeepSeek 随内测发出的匿名问卷原话。一个 Flash 级架构，被公开试探能否吃掉旗舰 Pro 的负载。这大概就是这轮内测真正的意图：用更低的价位，承接更高的野心。</p>
+    </div>
+    <div class="foot"><span>The question · Official survey</span><span>Flash 的价格 · Pro 的野心</span></div>
+  </section>
+
+  <!-- 10 来源 -->
+  <section class="slide dark" data-slide="9">
+    <img class="art" src="assets/night.webp" alt="" aria-hidden="true"><div class="wash" aria-hidden="true"></div>
+    <div class="chrome"><span>DeepSeek · Sources</span><span>10 / 10</span></div>
+    <div class="src">
+      <h2>来源与边界</h2>
+      <ol>
+        <li><span class="n">[1]</span><span class="w">DeepSeek 官方交流群内测通知（经多家媒体转述核实）· 2026-09-08</span><span class="u">官方群</span></li>
+        <li><span class="n">[2]</span><span class="w">AI 中文社区：V4.1 Flash 中间版本内测详情（模型 ID / 计费 / 限流 / 问卷）</span><span class="u">aizws.net</span></li>
+        <li><span class="n">[3]</span><span class="w">BigGo Finance：Two-Day Limited Beta for V4.1 Flash（并发对比 / 速度实测汇总）</span><span class="u">finance.biggo.com</span></li>
+        <li><span class="n">[4]</span><span class="w">36氪英文版：Flash-Tier Model with Pro-Level Ambition</span><span class="u">eu.36kr.com</span></li>
+        <li><span class="n">[5]</span><span class="w">DeepSeek 官方：V4 Preview 发布页（V4-Pro / V4-Flash 参数与 1M 上下文）</span><span class="u">deepseek.com</span></li>
+      </ol>
+      <p class="fine">事实边界：速度数字为开发者自发实测，非官方基准；参数规模以官方发布页为准；内测信息截至 2026-09-09 整理。视觉说明：本 deck 为 claude-fable-5-1-theme-workflow skill 的 night mode 演示案例，配图均为原创概念图，非官方素材、不作为证据；版式与 Anthropic 无隶属关系。</p>
+    </div>
+    <div class="foot"><span>Sources · Verified 2026-09-09</span><span>Style study · Fable 5.1 night</span></div>
+  </section>
+
+</div>
+
+<div class="theme-dots" role="group" aria-label="色彩主题">
+  <button type="button" data-mode="noon" aria-pressed="false" aria-label="Noon 主题"></button>
+  <button type="button" data-mode="night" aria-pressed="true" aria-label="Night 主题"></button>
+  <button type="button" data-mode="morning" aria-pressed="false" aria-label="Morning 主题"></button>
+</div>
+<div class="pager" role="group" aria-label="页码"></div>
+
+<script>
+(function () {
+  var deck = document.getElementById('deck');
+  var slides = Array.prototype.slice.call(deck.querySelectorAll('.slide'));
+  var dots = Array.prototype.slice.call(document.querySelectorAll('.theme-dots button'));
+  var arts = Array.prototype.slice.call(document.querySelectorAll('.art'));
+  var pager = document.querySelector('.pager');
+  var current = 0;
+
+  var MODE_ART = { noon: 'assets/noon.webp', night: 'assets/night.webp', morning: 'assets/morning.webp' };
+
+  slides.forEach(function (_, i) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.setAttribute('aria-label', '跳到第 ' + (i + 1) + ' 页');
+    b.addEventListener('click', function () { go(i); });
+    pager.appendChild(b);
+  });
+  var pageDots = Array.prototype.slice.call(pager.children);
+
+  function go(i) {
+    i = Math.max(0, Math.min(slides.length - 1, i));
+    deck.scrollTo({ left: i * deck.clientWidth, behavior: 'auto' });
+  }
+  function sync() {
+    var i = Math.round(deck.scrollLeft / deck.clientWidth);
+    if (i === current) return;
+    current = i;
+    pageDots.forEach(function (d, j) { d.setAttribute('aria-current', String(j === i)); });
+    document.body.classList.toggle('dark-on', slides[i].classList.contains('dark'));
+  }
+  deck.addEventListener('scroll', sync, { passive: true });
+  window.addEventListener('resize', function () { go(current); });
+
+  window.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { go(current + 1); e.preventDefault(); }
+    if (e.key === 'ArrowLeft'  || e.key === 'PageUp')                   { go(current - 1); e.preventDefault(); }
+    if (e.key === 'Home') { go(0); e.preventDefault(); }
+    if (e.key === 'End')  { go(slides.length - 1); e.preventDefault(); }
+  });
+
+  document.querySelectorAll('[data-go]').forEach(function (a) {
+    a.addEventListener('click', function (e) { e.preventDefault(); go(parseInt(a.dataset.go, 10)); });
+  });
+
+  dots.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var mode = btn.dataset.mode;
+      document.body.dataset.theme = mode;
+      arts.forEach(function (img) { img.src = MODE_ART[mode]; });
+      dots.forEach(function (b) { b.setAttribute('aria-pressed', String(b === btn)); });
+    });
+  });
+
+  deck.addEventListener('wheel', function (e) {
+    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+      deck.scrollLeft += e.deltaY;
+      e.preventDefault();
+    }
+  }, { passive: false });
+
+  sync();
+  pageDots[0].setAttribute('aria-current', 'true');
+  document.body.classList.toggle('dark-on', slides[0].classList.contains('dark'));
+})();
+</script>
+</body>
+</html>

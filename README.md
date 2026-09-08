@@ -22,6 +22,16 @@ An agent skill that distills the **publicly visible colour states** of Anthropic
 |---|---|---|
 | ![Deck cover, Noon](docs/screenshots/deck-cover-noon.webp) | ![Deck modes, Night](docs/screenshots/deck-modes-night.webp) | ![Deck evidence](docs/screenshots/deck-evidence.webp) |
 
+**Real-content case** — [`examples/case-deepseek-v41/`](examples/case-deepseek-v41/), a ten-slide Chinese deck about the DeepSeek V4.1 Flash two-day beta (Sep 8–10, 2026), built with the same deck route in night mode. Facts cross-checked across multiple same-day reports; community speed benchmarks labelled as informal.
+
+| Cover | Event | Speed evidence |
+|---|---|---|
+| ![Case cover](docs/screenshots/case-cover.webp) | ![Case event](docs/screenshots/case-event.webp) | ![Case speed](docs/screenshots/case-speed.webp) |
+
+| Timeline | The question |
+|---|---|
+| ![Case timeline](docs/screenshots/case-timeline.webp) | ![Case question](docs/screenshots/case-question.webp) |
+
 ## Contents
 
 ```
@@ -37,6 +47,7 @@ references/
 examples/
   theme-lab.html                  Self-contained three-mode editorial page (fictional content)
   theme-deck.html                 Six-slide horizontal-paging deck, theme-switchable (fictional content)
+  case-deepseek-v41/              Real-content case: ten-slide deck on the DeepSeek V4.1 Flash beta
   assets/*.webp                   Original GPT Image 2 concept art + one editorial illustration
 docs/screenshots/                 Verification screenshots of both demos
 ```
@@ -77,7 +88,7 @@ The public page loads proprietary typefaces (Anthropic Sans/Serif/Mono, Copernic
 
 - `SKILL.md`：完整工作流——三状态色彩 tokens、档案语法（日期行 / 编号目录 / 点状 leader / 非对称标题 / 单色场）、输出路由（编辑页 / 固定舞台 deck / 单文件 HTML 翻页 deck / 数据叙事 / 卡片）、生图工作流、分层氛围玻璃路由、Anti-slop 门禁与验收清单。
 - `references/`：来源审计、tokens JSON、组件配方、输出矩阵、GPT Image 2 提示词配方、分层玻璃材质规范，以及 `deck-html.md` 单文件翻页 deck 的机制契约与踩坑清单。
-- `examples/`：两个自包含演示——`theme-lab.html`（三主题编辑长页，全幅 hero 图 + 色场罩）和 `theme-deck.html`（六页横向翻页 deck，键盘 / 滚轮 / 触屏 / 圆点翻页，主题实时切换）。演示内容全部虚构；配图均为 GPT Image 2 原创概念图（非官方资产、不作为证据）。
+- `examples/`：三个演示——`theme-lab.html`（三主题编辑长页，全幅 hero 图 + 色场罩）、`theme-deck.html`（六页横向翻页 deck，键盘 / 滚轮 / 触屏 / 圆点翻页，主题实时切换）、`case-deepseek-v41/`（真实内容案例：DeepSeek V4.1 Flash 两天内测十页中文 deck，night 模式，事实经多源核实）。虚构演示内容全部标注；配图均为 GPT Image 2 原创概念图（非官方资产、不作为证据）。
 - `docs/screenshots/`：桌面 1920×1080 与移动端 390×844 的真实验收截图。
 
 **设计要点**：一份内容三种读法，切换只换 tokens 与氛围图，信息架构永不动；大面积单色场 + 640px 阅读列 + 880px 证据区；深色页是深蓝黑而非纯黑，纸面页是暖白而非空白模板；禁止紫蓝渐变、玻璃卡片墙和「居中大标题 + 三卡片 + CTA」模板。
