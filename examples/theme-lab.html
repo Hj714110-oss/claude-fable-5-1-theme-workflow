@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tidewater Archive — Fable 5.1 Theme Lab (Style Study)</title>
+<style>
+  :root {
+    --paper: #FAF9F5; --paper-2: #F5F4ED;
+    --ink: #141413; --ink-2: #3D3D3A;
+    --cloud: #D1CFC5; --cloud-dark: #87867F;
+    --clay: #D97757; --olive: #788C5D;
+    --focus: #2C84DB;
+  }
+  [data-theme="noon"]    { --hero: #749BD0; --swatch: #7EA9DE; --mode-accent: #2F5D8A; --art-pos: 62% center; --art-pos-mobile: 66% center; }
+  [data-theme="night"]   { --hero: #27314B; --swatch: #1A2237; --mode-accent: #27314B; --art-pos: 40% center; --art-pos-mobile: 36% center; }
+  [data-theme="morning"] { --hero: #AAA9BC; --swatch: #DCC4B3; --mode-accent: #8A6D5C; --art-pos: 44% center; --art-pos-mobile: 40% center; }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--paper); color: var(--ink);
+    font-family: Arial, "Helvetica Neue", Aptos, sans-serif;
+    font-size: 17px; line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  :focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 2px; }
+
+  .site-header {
+    position: fixed; inset: 0 0 auto 0; height: 68px; z-index: 10;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 clamp(24px, 5vw, 80px);
+    background: color-mix(in srgb, var(--paper) 88%, transparent);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--cloud);
+  }
+  .brand { font-size: 13px; letter-spacing: .18em; text-transform: uppercase; text-decoration: none; color: var(--ink); }
+  .brand span { color: var(--cloud-dark); }
+
+  .theme-switch { display: flex; gap: 8px; }
+  .theme-switch button {
+    position: relative;
+    display: flex; align-items: center; gap: 7px;
+    font: 11px/1 Arial, sans-serif; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--ink-2); background: none; border: 1px solid var(--cloud);
+    border-radius: 999px; padding: 7px 12px; cursor: pointer;
+  }
+  .theme-switch button .dot { width: 12px; height: 12px; border-radius: 50%; border: 1px solid rgba(0,0,0,.15); flex: none; }
+  .theme-switch button[aria-pressed="true"] { border-color: var(--ink); color: var(--ink); font-weight: 700; }
+  .theme-switch .dot.noon { background: #7EA9DE; }
+  .theme-switch .dot.night { background: #1A2237; }
+  .theme-switch .dot.morning { background: #DCC4B3; }
+
+  /* Hero: full-bleed mode artwork + colour-field wash + one stable overlaid grid.
+     Switching modes swaps the image, object-position and colour tokens only. */
+  .hero {
+    position: relative; isolation: isolate; overflow: hidden;
+    min-height: 100svh; background: var(--hero); color: var(--paper);
+    padding: 120px clamp(24px, 5vw, 80px) 96px;
+  }
+  .hero-art {
+    position: absolute; inset: 0; z-index: -2;
+    width: 100%; height: 100%; object-fit: cover; object-position: var(--art-pos);
+  }
+  .hero-wash { position: absolute; inset: 0; z-index: -1; background: var(--hero); opacity: .84; }
+  .hero-grid {
+    width: 100%; max-width: 1400px; margin: 0 auto; min-height: calc(100svh - 216px);
+    display: grid; grid-template-columns: repeat(12, 1fr); gap: 0 32px;
+    grid-template-rows: auto auto auto 1fr;
+  }
+  .hero .date {
+    grid-column: 1 / 6;
+    font-size: 13px; letter-spacing: .22em; text-transform: uppercase;
+    opacity: .85;
+  }
+  .hero h1 {
+    grid-column: 1 / 10; margin-top: 72px;
+    font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
+    font-weight: 400; font-size: clamp(44px, 6.4vw, 84px); line-height: 1.02;
+    max-width: 12ch; text-shadow: 0 2px 18px rgba(20,20,19,.18);
+  }
+  .hero h1 em { font-style: italic; display: block; margin-left: clamp(32px, 8vw, 128px); }
+  .hero .standfirst {
+    grid-column: 7 / 11; margin-top: 40px;
+    max-width: 46ch; font-size: 15px; line-height: 1.6; opacity: .92;
+  }
+  .archive-index {
+    grid-column: 7 / 13; align-self: end;
+    list-style: none; max-width: 640px; justify-self: end; width: 100%;
+  }
+  .archive-index a {
+    display: flex; align-items: baseline; gap: 14px;
+    color: var(--paper); text-decoration: none; padding: 10px 0;
+    transition: opacity .2s ease, filter .2s ease;
+  }
+  .archive-index .num { font: 13px/1 ui-monospace, SFMono-Regular, Menlo, monospace; opacity: .8; flex: none; }
+  .archive-index .name { font-family: Georgia, serif; font-size: 17px; flex: none; }
+  .archive-index .leader { flex: 1; border-bottom: 1px dotted rgba(250,249,245,.55); transform: translateY(-4px); }
+  .archive-index:hover a:not(:hover) { opacity: .45; filter: blur(.4px); }
+  .archive-index a:focus-visible { opacity: 1; filter: none; }
+
+  .hero-foot {
+    position: absolute; left: clamp(24px, 5vw, 80px); right: clamp(24px, 5vw, 80px); bottom: 28px;
+    display: flex; justify-content: space-between; align-items: center; gap: 16px;
+    font-size: 11px; letter-spacing: .14em; text-transform: uppercase; opacity: .85;
+  }
+  .hero-swatches { display: flex; gap: 8px; }
+  .hero-swatches i { width: 18px; height: 18px; border-radius: 50%; border: 1px solid rgba(250,249,245,.5); }
+  .hero-swatches .s-noon { background: #7EA9DE; } .hero-swatches .s-night { background: #1A2237; } .hero-swatches .s-morning { background: #DCC4B3; }
+
+  main { padding: 96px clamp(24px, 5vw, 80px) 128px; }
+  .reading { max-width: 640px; margin: 0 auto; }
+  .reading .sec-date {
+    font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--cloud-dark);
+    display: block; margin: 72px 0 14px;
+  }
+  .reading .sec-date:first-child { margin-top: 0; }
+  .reading h2 {
+    font-family: Georgia, "Iowan Old Style", serif; font-weight: 400;
+    font-size: clamp(28px, 4vw, 40px); line-height: 1.12; margin-bottom: 20px;
+  }
+  .reading h2 .sec-num { font: 13px/1 ui-monospace, Menlo, monospace; color: var(--mode-accent); display: block; margin-bottom: 12px; letter-spacing: .1em; }
+  .reading p { margin-bottom: 18px; color: var(--ink-2); }
+  .reading p strong { color: var(--ink); }
+  .rule { border: 0; border-top: 1px solid var(--cloud); margin: 72px auto; max-width: 640px; }
+
+  .evidence {
+    max-width: 880px; margin: 72px auto 0; padding: 40px;
+    background: var(--paper-2); border: 1px solid var(--cloud);
+  }
+  .evidence figcaption { font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--cloud-dark); margin-bottom: 24px; }
+  .evidence .plate { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; border: 1px solid var(--cloud); margin-bottom: 32px; }
+  .bar-row { display: grid; grid-template-columns: 130px 1fr 52px; gap: 14px; align-items: center; margin-bottom: 14px; font-size: 13px; }
+  .bar-row .track { height: 18px; background: var(--cloud); }
+  .bar-row .fill { height: 100%; background: var(--mode-accent); }
+  .bar-row output { font: 12px/1 ui-monospace, Menlo, monospace; text-align: right; color: var(--ink-2); }
+
+  .colophon { max-width: 640px; margin: 96px auto 0; font-size: 13px; color: var(--cloud-dark); line-height: 1.7; }
+  .colophon b { color: var(--ink-2); }
+
+  @media (max-width: 760px) {
+    .hero { min-height: 88svh; padding-top: 104px; }
+    .hero-art { object-position: var(--art-pos-mobile); }
+    .hero-grid { display: flex; flex-direction: column; min-height: calc(88svh - 200px); }
+    .hero h1 { margin-top: 48px; }
+    .hero .standfirst { margin-top: 24px; }
+    .archive-index { margin-top: 56px; max-width: none; }
+    .hero-foot { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .evidence { padding: 24px; }
+    .bar-row { grid-template-columns: 96px 1fr 44px; }
+    .brand span { display: none; }
+    .site-header { padding: 0 16px; }
+    .theme-switch { gap: 6px; }
+    .theme-switch button { padding: 8px; }
+    .theme-switch button .lbl { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .archive-index a { transition: none; }
+    .archive-index:hover a:not(:hover) { opacity: 1; filter: none; }
+  }
+</style>
+</head>
+<body data-theme="noon">
+
+<header class="site-header">
+  <a class="brand" href="#top">Tidewater <span>/ Style Study 01</span></a>
+  <nav class="theme-switch" aria-label="Color theme">
+    <button type="button" data-mode="noon" aria-pressed="true"><i class="dot noon"></i><span class="lbl">Noon</span></button>
+    <button type="button" data-mode="night" aria-pressed="false"><i class="dot night"></i><span class="lbl">Night</span></button>
+    <button type="button" data-mode="morning" aria-pressed="false"><i class="dot morning"></i><span class="lbl">Morning</span></button>
+  </nav>
+</header>
+
+<section class="hero" id="top">
+  <img class="hero-art" id="mode-art" src="assets/noon.webp" alt="" aria-hidden="true">
+  <div class="hero-wash" aria-hidden="true"></div>
+  <div class="hero-grid">
+    <p class="date">Field Report · 04 March 2026 · V 1.0</p>
+    <h1>The Tidewater <em>Archive</em></h1>
+    <p class="standfirst">A fictional three-mode demonstration of the Fable 5.1 theme workflow: one article, read under noon blue, night ink, and morning paper. All names, places, and figures on this page are invented.</p>
+    <ul class="archive-index">
+      <li><a href="#s1"><span class="num">[01]</span><span class="name">Scope &amp; method</span><span class="leader"></span></a></li>
+      <li><a href="#s2"><span class="num">[02]</span><span class="name">Three readings</span><span class="leader"></span></a></li>
+      <li><a href="#s3"><span class="num">[03]</span><span class="name">Evidence table</span><span class="leader"></span></a></li>
+      <li><a href="#s4"><span class="num">[04]</span><span class="name">Colophon</span><span class="leader"></span></a></li>
+    </ul>
+  </div>
+  <div class="hero-foot">
+    <div class="hero-swatches" aria-hidden="true"><i class="s-noon"></i><i class="s-night"></i><i class="s-morning"></i></div>
+    <span>Style study · Concept art: GPT Image 2, original · Not official · Not affiliated with Anthropic</span>
+  </div>
+</section>
+
+<main>
+  <article class="reading">
+    <span class="sec-date" id="s1">Section 01 · Method</span>
+    <h2><span class="sec-num">[01]</span>Scope &amp; method</h2>
+    <p>The Tidewater Archive is an invented institution created for this style study. Its sole purpose is to give the three colour states — <strong>Noon</strong>, <strong>Night</strong>, and <strong>Morning</strong> — something honest to hold: a date line, a numbered index with dot leaders, an asymmetric title, a narrow reading column, and one restrained evidence frame.</p>
+    <p>Switching modes changes the hero field, the artwork, the accent, and the mood of the page. It never changes the information architecture, so the three readings can be compared like prints from the same negative.</p>
+
+    <hr class="rule">
+
+    <span class="sec-date" id="s2">Section 02 · Modes</span>
+    <h2><span class="sec-num">[02]</span>Three readings</h2>
+    <p><strong>Noon</strong> reads as a public record: open, calm, scan-friendly. <strong>Night</strong> reads as the technical annex: systems, risk, and things checked after dark. <strong>Morning</strong> reads as the archive proper: dates, paper, and the people who filed the documents.</p>
+    <p>None of the three is a reskin. Each keeps the same skeleton — header, hero, index, reading column, evidence — and only re-tunes the tokens that carry mood.</p>
+  </article>
+
+  <figure class="evidence" id="s3">
+    <figcaption>[03] Evidence · Invented catalogue counts, 2026</figcaption>
+    <img class="plate" src="assets/illustration.webp" width="1536" height="1024" alt="Original GPT Image 2 illustration of a fictional cataloguing desk: blank index cards, an unlabelled contour map, a brass ruler, and a small clay pigment dish.">
+    <div class="bar-row"><span>Charts</span><div class="track"><div class="fill" style="width:72%"></div></div><output>072</output></div>
+    <div class="bar-row"><span>Letters</span><div class="track"><div class="fill" style="width:48%"></div></div><output>048</output></div>
+    <div class="bar-row"><span>Maps</span><div class="track"><div class="fill" style="width:61%"></div></div><output>061</output></div>
+    <div class="bar-row"><span>Photographs</span><div class="track"><div class="fill" style="width:35%"></div></div><output>035</output></div>
+  </figure>
+
+  <div class="reading">
+    <div class="colophon" id="s4">
+      <span class="sec-date">Section 04 · Colophon</span>
+      <p><b>[04] Colophon.</b> Demonstration page for the open-source skill <i>claude-fable-5-1-theme-workflow</i>. Colour states are an independent extraction from publicly visible page behaviour; no Anthropic fonts, logos, illustrations, or source code are used. All content is fictional. Hero and plate imagery are original GPT Image 2 concept art — unofficial assets, not evidence. Set in Georgia, Arial, and ui-monospace fallbacks.</p>
+    </div>
+  </div>
+</main>
+
+<script>
+  var ART = {
+    noon:    { src: 'assets/noon.webp' },
+    night:   { src: 'assets/night.webp' },
+    morning: { src: 'assets/morning.webp' }
+  };
+  var artImg = document.getElementById('mode-art');
+  var buttons = document.querySelectorAll('.theme-switch button');
+  buttons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var mode = btn.dataset.mode;
+      document.body.dataset.theme = mode;
+      if (ART[mode]) { artImg.src = ART[mode].src; }
+      buttons.forEach(function (b) { b.setAttribute('aria-pressed', String(b === btn)); });
+    });
+  });
+</script>
+</body>
+</html>

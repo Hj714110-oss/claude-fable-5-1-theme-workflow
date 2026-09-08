@@ -1,0 +1,29 @@
+{
+  "source": "https://www.anthropic.com/claude-fable-and-mythos-5-1",
+  "extractionDate": "2026-09-02",
+  "boundary": "public visual extraction; no official fonts, logo, illustration, or source bundle",
+  "shared": {
+    "paper": "#FAF9F5",
+    "paper2": "#F5F4ED",
+    "ink": "#141413",
+    "ink2": "#3D3D3A",
+    "cloud": "#D1CFC5",
+    "cloudDark": "#87867F",
+    "clay": "#D97757",
+    "olive": "#788C5D",
+    "cactus": "#BCD1CA",
+    "spacing": [4, 8, 12, 16, 24, 32, 48, 64, 80, 96, 128],
+    "layout": {"headerPx": 68, "desktopColumns": 12, "desktopGutterPx": 32, "readingColumnMaxPx": 640, "mediaMaxPx": 880}
+  },
+  "themes": {
+    "noon": {"label": "Noon", "hero": "#749BD0", "swatch": "#7EA9DE", "bias": "discovery / public research / launch"},
+    "night": {"label": "Night", "hero": "#27314B", "swatch": "#1A2237", "bias": "systems / security / technical strategy"},
+    "morning": {"label": "Morning", "hero": "#AAA9BC", "swatch": "#DCC4B3", "bias": "archive / people / history / long reading"}
+  },
+  "typography": {
+    "display": ["Georgia", "Iowan Old Style", "Times New Roman", "serif"],
+    "interface": ["Arial", "Helvetica Neue", "Aptos", "sans-serif"],
+    "data": ["SFMono-Regular", "Menlo", "Consolas", "monospace"]
+  },
+  "outputs": ["editorial-web", "archive-deck", "research-report", "data-story", "timeline", "social-card", "print-card"]
+}
