@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DeepSeek V4.1 Flash · 两天窗口 — 手写学术报告</title>
+<link rel="stylesheet" href="assets/base.css">
+<link rel="stylesheet" href="assets/animations.css">
+<link rel="stylesheet" href="assets/neat-annotations.css">
+<link rel="stylesheet" href="assets/template.css">
+<style>
+@font-face {
+  font-family: "Ma Shan Zheng";
+  src: url("MaShanZheng-Regular.ttf") format("truetype");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+/* 案例页局部补充：数字页与双栏 */
+.big-figure { font-size: 150px; line-height: .95; letter-spacing: .02em; }
+.big-figure small { font-size: 40px; color: var(--muted); }
+.speed-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 70px; align-items: center; }
+.speed-note { font-size: 24px; line-height: 1.8; display: grid; gap: 20px; }
+.arch-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; margin-top: 10px; }
+.arch-col h3 { font-size: 30px; color: var(--blue); font-weight: 500; margin: 0 0 18px; }
+.arch-col p { font-size: 25px; line-height: 1.7; margin: 0; }
+.arch-col .vs-arrow { display:none; }
+.tl-flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 18px; align-items: stretch; margin-top: 30px; }
+.tl-node { border: 3px solid var(--ink); padding: 18px 14px; font-size: 20px; line-height: 1.5; position: relative; background: transparent; }
+.tl-node .d { display: block; color: var(--blue); font-size: 22px; margin-bottom: 10px; }
+.tl-node.hot { border-color: var(--magenta); }
+.tl-node.hot .d { color: var(--magenta); }
+.tl-cap { margin-top: 34px; font-size: 24px; }
+.conc-nums { display: flex; gap: 90px; align-items: baseline; margin: 40px 0 50px; }
+.conc-nums .n b { font-size: 120px; font-weight: 500; line-height: 1; }
+.conc-nums .n span { display: block; font-size: 24px; margin-top: 14px; color: var(--muted); }
+.conc-nums .n.dim b, .conc-nums .n.dim span { opacity: .45; }
+.src-list { display: grid; gap: 16px; font-size: 22px; line-height: 1.6; margin-top: 10px; }
+.src-list .row { display: flex; gap: 18px; align-items: baseline; }
+.src-list .row .no { color: var(--blue); flex: none; }
+.src-list .row .u { margin-left: auto; color: var(--muted); font-size: 19px; flex: none; }
+</style>
+</head>
+<body>
+<main class="deck">
+
+  <!-- 1 封面：极简 + 下半页留白 -->
+  <section class="slide cover is-active" data-title="封面">
+    <h1>DeepSeek V4.1 Flash：一个只活两天的新骨架</h1>
+    <div class="cover-meta">
+      <span>技术简报 · 内测观察</span>
+      <span>September 9, 2026</span>
+    </div>
+    <aside class="notes">今天回答一个问题：这个两天就下线的「中间版本」，为什么值得认真看。</aside>
+  </section>
+
+  <!-- 2 事件流程 -->
+  <section class="slide" data-title="事件">
+    <h2 class="slide-title">9 月 8 日下午，发生了什么？</h2>
+    <div class="flow">
+      <div class="flow-box">官方交流群<br>一条通知</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box"><span class="mark-yellow">换模型名即可调用</span><br><span style="font-size:22px">deepseek-v4.1-flash-<br>expires-on-0910</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box"><span class="mark-coral">9 月 10 日</span><br>自动下线</div>
+    </div>
+    <div class="result-box">没有发布会、没有预热：窗口只有两天，模型名里直接写着死期</div>
+    <aside class="notes">强调「中间版本」这个官方自称——它不是正式版，是一次公开的功能验证。</aside>
+  </section>
+
+  <!-- 3 速度坐标 -->
+  <section class="slide" data-title="速度">
+    <h2 class="slide-title">它到底有多快？</h2>
+    <div class="speed-grid">
+      <div>
+        <div class="big-figure"><span class="mark-yellow">507</span><small> tokens/s</small></div>
+        <div style="font-size:24px; margin-top:26px; line-height:1.7">开发者实测最高输出速度。<br>普遍报告超过 <span class="ann ann-n ann-green" data-note="已很快">300 tokens/s</span>。</div>
+      </div>
+      <svg viewBox="0 0 720 460" role="img" aria-label="手绘柱状图：三个实测速度">
+        <defs><filter id="w1"><feTurbulence baseFrequency="0.02" numOctaves="1" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.5"/></filter></defs>
+        <g filter="url(#w1)" fill="none" stroke="var(--ink)" stroke-width="4" stroke-linecap="round">
+          <path d="M100 400 L660 400"/>
+          <path d="M100 400 L100 60"/>
+          <rect x="150" y="90" width="90" height="310" fill="var(--blue)" stroke="none"/>
+          <rect x="330" y="200" width="90" height="200" fill="var(--ink)" stroke="none"/>
+          <rect x="510" y="215" width="90" height="185" fill="var(--ink)" stroke="none"/>
+        </g>
+        <text x="160" y="70" font-size="30" fill="var(--blue)">507</text>
+        <text x="340" y="180" font-size="30">328</text>
+        <text x="520" y="195" font-size="30">300+</text>
+        <text x="140" y="445" font-size="24">最高实测</text>
+        <text x="310" y="445" font-size="24">鹈鹕骑车SVG</text>
+        <text x="510" y="445" font-size="24">普遍水平</text>
+      </svg>
+    </div>
+    <div class="result-box" style="margin-top:26px">数字来自社区非正式实测，不是官方跑分——但量级一致</div>
+    <aside class="notes">先读大数字，再解释三根柱子；强调这是体感证据而非基准测试。</aside>
+  </section>
+
+  <!-- 4 架构对比 -->
+  <section class="slide" data-title="架构">
+    <h2 class="slide-title">多模态，从外挂变成骨架</h2>
+    <div class="arch-cols">
+      <div class="arch-col">
+        <h3>V4 Flash · 旧架构</h3>
+        <p>图文靠 <span class="ann ann-n ann-blue" data-note="8月21日上线">Vision 扩展包</span> 接入——能力是「装上去」的，文本和图像各走各的门。</p>
+      </div>
+      <div class="arch-col">
+        <h3 style="color:var(--magenta)">V4.1 Flash · 新架构</h3>
+        <p>文本、图像、音频<span class="mark-yellow">统一处理</span>，原生多模态。官方原话：能力更强、速度更快、成本更低。</p>
+      </div>
+    </div>
+    <div class="result-box" style="margin-top:60px">这是架构级迭代，不是调参：V4 系列沿用旧架构，V4.1 换了骨架</div>
+    <aside class="notes">左栏讲旧路，右栏讲新路；落到玫红框：区别在骨架，不在参数。</aside>
+  </section>
+
+  <!-- 5 计费表 -->
+  <section class="slide" data-title="计费">
+    <h2 class="slide-title">新架构，账单变了吗？</h2>
+    <table class="hand-table">
+      <thead><tr><th>每百万 tokens</th><th>缓存命中输入</th><th>未命中输入</th><th>输出</th></tr></thead>
+      <tbody>
+        <tr><td>错峰时段</td><td>¥0.05</td><td>¥1.5</td><td>¥4.5</td></tr>
+        <tr><td>高峰时段</td><td>¥0.1</td><td>¥3</td><td>¥9</td></tr>
+        <tr><td>内测加价</td><td><span class="mark-green">无</span></td><td><span class="mark-green">无</span></td><td><span class="mark-green">无</span></td></tr>
+      </tbody>
+    </table>
+    <div class="result-box" style="margin-top:52px">与 deepseek-v4-flash 逐项对齐——换架构，不换价签</div>
+    <aside class="notes">让观众先扫绿色那一行，再回看具体数字；这是 DeepSeek 的老习惯了。</aside>
+  </section>
+
+  <!-- 6 时间线 -->
+  <section class="slide" data-title="时间线">
+    <h2 class="slide-title">放回时间线里看：四十天，五步棋</h2>
+    <div class="tl-flow">
+      <div class="tl-node"><span class="d">04·24</span>V4 Preview 开源<br><span style="font-size:17px">Pro 1.6T/49B · Flash 284B/13B · 1M · MIT</span></div>
+      <div class="tl-node"><span class="d">07·31</span>V4 Flash 公测<br><span style="font-size:17px">生产 API 开放</span></div>
+      <div class="tl-node"><span class="d">08·13</span>V4 Pro 上线<br><span style="font-size:17px">+ Harness v0.1 开源</span></div>
+      <div class="tl-node"><span class="d">08·21</span>Vision Exp<br><span style="font-size:17px">外挂式视觉理解</span></div>
+      <div class="tl-node hot"><span class="d">09·08</span>V4.1 Flash 内测<br><span style="font-size:17px">新架构 · 两天窗口</span></div>
+    </div>
+    <p class="tl-cap">节奏没有放慢——这个「中间版本」很可能是<span class="mark-yellow">下一轮更新周期的发令枪</span>。</p>
+    <aside class="notes">沿着五个节点走一遍，停在玫红框：密度本身就是信号。</aside>
+  </section>
+
+  <!-- 7 并发限制 -->
+  <section class="slide" data-title="限制">
+    <h2 class="slide-title">一个容易忽略的限制</h2>
+    <div class="conc-nums">
+      <div class="n"><b style="color:var(--magenta)">20</b><span>V4.1 Flash 内测并发</span></div>
+      <div class="n dim"><b>500</b><span>V4 Pro 正式</span></div>
+      <div class="n dim"><b>2500</b><span>V4 Flash 正式</span></div>
+    </div>
+    <div class="result-box">只够功能验证，不够生产负载——这恰恰说明它是「中间版本」</div>
+    <aside class="notes">把 20 和 2500 放在一起读；限制本身就是定位声明。</aside>
+  </section>
+
+  <!-- 8 结论：问卷 -->
+  <section class="slide" data-title="结论">
+    <h2 class="slide-title">最后，只剩一个官方问题</h2>
+    <div class="formula-summary" style="font-size:40px; margin-top:60px">
+      <span>新架构</span> + <span>原生多模态</span> + <span>更快</span> + <span>同价</span>
+    </div>
+    <div style="text-align:center; font-size:34px; margin-top:70px; line-height:1.6">
+      <span class="ann ann-n ann-magenta" data-note="匿名问卷原话">「V4.1 Flash 能否全面替换线上 V4 Pro？」</span>
+    </div>
+    <div class="result-box" style="margin-top:60px">一个 Flash 级架构，被公开试探能否吃掉旗舰 Pro 的负载</div>
+    <aside class="notes">这是全场唯一加引号的句子——它是 DeepSeek 自己问的。</aside>
+  </section>
+
+  <!-- 9 结束 -->
+  <section class="slide thanks" data-title="结束">
+    <h2>Thank you!</h2>
+    <div class="result-box" style="font-size:22px">来源：DeepSeek 官方群通知 · AI 中文社区 · BigGo · 36氪 · DeepSeek 官方发布页<br>速度数字为社区非正式实测 · 信息截至 2026-09-09</div>
+    <aside class="notes">收尾保持安静；来源与事实边界已经写在结论框里。</aside>
+  </section>
+
+</main>
+<script src="assets/runtime.js?v=20260909"></script>
+</body>
+</html>
