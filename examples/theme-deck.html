@@ -55,6 +55,7 @@
   .art { position:absolute; inset:0; z-index:-2; width:100%; height:100%;
          object-fit:cover; object-position:var(--art-pos); }
   .wash { position:absolute; inset:0; z-index:-1; background:var(--hero); opacity:.84; }
+  .dataviz-art { position:absolute; inset:0; z-index:-1; width:100%; height:100%; object-fit:cover; object-position:center; opacity:.28; mix-blend-mode:screen; pointer-events:none; }
 
   /* ---------- Slide 1 · Cover ---------- */
   .cover .date { font-size:13px; letter-spacing:.22em; opacity:.85; }
@@ -166,6 +167,15 @@
   @media (prefers-reduced-motion:reduce) {
     #deck { scroll-snap-type:none; }
   }
+
+  /* ---------- Entrance choreography (WebView-safe) ----------
+     The animation clock in some embedded WebViews is frozen, so CSS
+     @keyframes and transitions cannot be trusted. Instead content is
+     visible by default and JS drives the stagger with a Date.now()-based
+     tween on setInterval. If timers never fire, every element simply
+     stays visible at its final state — content can never be lost. */
+  [data-anim] { opacity:1; }
+  .bar-row .fill { transform-origin: left center; }
 </style>
 </head>
 <body data-theme="noon">
@@ -176,10 +186,10 @@
   <section class="slide dark cover" data-slide="0">
     <img class="art" src="assets/noon.webp" alt="" aria-hidden="true"><div class="wash" aria-hidden="true"></div>
     <div class="chrome"><span>Tidewater · Style Study</span><span>01 / 06</span></div>
-    <p class="date">Archive Deck · 04 March 2026 · V 1.0</p>
-    <h1 class="deck-title">The Tidewater <em>Archive</em></h1>
-    <p class="deck-sub">One fictional archive, read three ways: noon blue, night ink, morning paper. A demonstration of the Fable 5.1 theme workflow.</p>
-    <div class="modes"><i class="m1"></i><i class="m2"></i><i class="m3"></i><span>&nbsp;Noon · Night · Morning</span></div>
+    <p class="date" data-anim style="--i:0">Archive Deck · 04 March 2026 · V 1.0</p>
+    <h1 class="deck-title" data-anim style="--i:1">The Tidewater <em>Archive</em></h1>
+    <p class="deck-sub" data-anim style="--i:2">One fictional archive, read three ways: noon blue, night ink, morning paper. A demonstration of the Fable 5.1 theme workflow.</p>
+    <div class="modes" data-anim style="--i:3"><i class="m1"></i><i class="m2"></i><i class="m3"></i><span>&nbsp;Noon · Night · Morning</span></div>
     <div class="foot"><span>Cover · Hero field</span><span>Style study · Not official</span></div>
   </section>
 
@@ -188,12 +198,12 @@
     <img class="art" src="assets/noon.webp" alt="" aria-hidden="true"><div class="wash" aria-hidden="true"></div>
     <div class="chrome"><span>Tidewater · Contents</span><span>02 / 06</span></div>
     <nav class="toc" aria-label="Deck contents">
-      <p class="toc-date">Index · Reader's map</p>
+      <p class="toc-date" data-anim style="--i:0">Index · Reader's map</p>
       <ol>
-        <li><a href="#" data-go="2"><span class="n">[03]</span><span class="t">Three modes</span><span class="leader"></span><span class="d">colour states</span></a></li>
-        <li><a href="#" data-go="3"><span class="n">[04]</span><span class="t">Evidence</span><span class="leader"></span><span class="d">invented figures</span></a></li>
-        <li><a href="#" data-go="4"><span class="n">[05]</span><span class="t">Archive grammar</span><span class="leader"></span><span class="d">the rules</span></a></li>
-        <li><a href="#" data-go="5"><span class="n">[06]</span><span class="t">Colophon</span><span class="leader"></span><span class="d">source &amp; status</span></a></li>
+        <li data-anim style="--i:1"><a href="#" data-go="2"><span class="n">[03]</span><span class="t">Three modes</span><span class="leader"></span><span class="d">colour states</span></a></li>
+        <li data-anim style="--i:2"><a href="#" data-go="3"><span class="n">[04]</span><span class="t">Evidence</span><span class="leader"></span><span class="d">invented figures</span></a></li>
+        <li data-anim style="--i:3"><a href="#" data-go="4"><span class="n">[05]</span><span class="t">Archive grammar</span><span class="leader"></span><span class="d">the rules</span></a></li>
+        <li data-anim style="--i:4"><a href="#" data-go="5"><span class="n">[06]</span><span class="t">Colophon</span><span class="leader"></span><span class="d">source &amp; status</span></a></li>
       </ol>
     </nav>
     <div class="foot"><span>Index · Dot leaders</span><span>Click an entry to jump</span></div>
@@ -201,28 +211,28 @@
 
   <!-- 03 · Modes -->
   <section class="slide dark modes-slide" data-slide="2">
-    <img class="art" src="assets/noon.webp" alt="" aria-hidden="true"><div class="wash" aria-hidden="true"></div>
+    <img class="art" src="assets/noon.webp" alt="" aria-hidden="true"><img class="dataviz-art" src="assets/dataviz-noon.jpg" alt="" aria-hidden="true"><div class="wash" aria-hidden="true"></div>
     <div class="chrome"><span>Tidewater · Modes</span><span>03 / 06</span></div>
-    <h2 class="big">Three readings <em>of one archive</em></h2>
-    <p class="mode-note"><b id="mode-name">Noon · the public record</b><span id="mode-desc">Open, calm, scan-friendly. The reading you give a stranger at midday.</span></p>
+    <h2 class="big" data-anim style="--i:0">Three readings <em>of one archive</em></h2>
+    <p class="mode-note" data-anim style="--i:1"><b id="mode-name">Noon · the public record</b><span id="mode-desc">Open, calm, scan-friendly. The reading you give a stranger at midday.</span></p>
     <div class="foot"><span>Modes · Full-bleed art</span><span>Switch themes · bottom left</span></div>
   </section>
 
   <!-- 04 · Evidence -->
   <section class="slide paper evidence-slide" data-slide="3">
     <div class="chrome"><span>Tidewater · Evidence</span><span>04 / 06</span></div>
-    <p class="k">[04] · Invented catalogue counts, 2026</p>
-    <h2>What the shelves hold</h2>
+    <p class="k" data-anim style="--i:0">[04] · Invented catalogue counts, 2026</p>
+    <h2 data-anim style="--i:1">What the shelves hold</h2>
     <div class="evidence-grid">
-      <figure>
+      <figure data-anim style="--i:2">
         <img src="assets/illustration.webp" width="1536" height="1024" alt="Original GPT Image 2 illustration of a fictional cataloguing desk: blank index cards, an unlabelled contour map, a brass ruler, and a small clay pigment dish.">
         <figcaption>Concept art · GPT Image 2 · unofficial asset, not evidence</figcaption>
       </figure>
       <div class="bars">
-        <div class="bar-row"><span>Charts</span><div class="track"><div class="fill" style="width:72%"></div></div><output>072</output></div>
-        <div class="bar-row"><span>Letters</span><div class="track"><div class="fill" style="width:48%"></div></div><output>048</output></div>
-        <div class="bar-row"><span>Maps</span><div class="track"><div class="fill" style="width:61%"></div></div><output>061</output></div>
-        <div class="bar-row"><span>Photographs</span><div class="track"><div class="fill" style="width:35%"></div></div><output>035</output></div>
+        <div class="bar-row" data-anim style="--i:3"><span>Charts</span><div class="track"><div class="fill" style="width:72%"></div></div><output data-count-to="72" data-count-pad="3">072</output></div>
+        <div class="bar-row" data-anim style="--i:4"><span>Letters</span><div class="track"><div class="fill" style="width:48%"></div></div><output data-count-to="48" data-count-pad="3">048</output></div>
+        <div class="bar-row" data-anim style="--i:5"><span>Maps</span><div class="track"><div class="fill" style="width:61%"></div></div><output data-count-to="61" data-count-pad="3">061</output></div>
+        <div class="bar-row" data-anim style="--i:6"><span>Photographs</span><div class="track"><div class="fill" style="width:35%"></div></div><output data-count-to="35" data-count-pad="3">035</output></div>
         <p class="note">Every figure on this slide is invented for the study. The accent bar colour follows the active mode.</p>
       </div>
     </div>
@@ -233,14 +243,14 @@
   <section class="slide dark grammar-slide" data-slide="4">
     <img class="art" src="assets/noon.webp" alt="" aria-hidden="true"><div class="wash" aria-hidden="true"></div>
     <div class="chrome"><span>Tidewater · Grammar</span><span>05 / 06</span></div>
-    <p class="statement">The archive is a <em>grammar</em>, not a colour scheme.</p>
+    <p class="statement" data-anim style="--i:0">The archive is a <em>grammar</em>, not a colour scheme.</p>
     <ul>
-      <li><span class="n">01</span>Date or version line, tracked sans</li>
-      <li><span class="n">02</span>Numbered index with dot leaders</li>
-      <li><span class="n">03</span>Asymmetric serif title, one focal point</li>
-      <li><span class="n">04</span>One solid mode field, no gradients</li>
-      <li><span class="n">05</span>Narrow reading column, wide evidence</li>
-      <li><span class="n">06</span>Source and status at the boundary</li>
+      <li data-anim style="--i:1"><span class="n">01</span>Date or version line, tracked sans</li>
+      <li data-anim style="--i:2"><span class="n">02</span>Numbered index with dot leaders</li>
+      <li data-anim style="--i:3"><span class="n">03</span>Asymmetric serif title, one focal point</li>
+      <li data-anim style="--i:4"><span class="n">04</span>One solid mode field, no gradients</li>
+      <li data-anim style="--i:5"><span class="n">05</span>Narrow reading column, wide evidence</li>
+      <li data-anim style="--i:6"><span class="n">06</span>Source and status at the boundary</li>
     </ul>
     <div class="foot"><span>Grammar · Six rules</span><span>From SKILL.md §4</span></div>
   </section>
@@ -249,8 +259,8 @@
   <section class="slide dark closing" data-slide="5">
     <img class="art" src="assets/noon.webp" alt="" aria-hidden="true"><div class="wash" aria-hidden="true"></div>
     <div class="chrome"><span>Tidewater · Colophon</span><span>06 / 06</span></div>
-    <p class="fin">Filed under <em>style studies</em></p>
-    <p class="credits"><b>[06] Colophon.</b> Demonstration deck for the open-source skill <i>claude-fable-5-1-theme-workflow</i>. Colour states are an independent extraction from publicly visible page behaviour; no Anthropic fonts, logos, illustrations, or source code are used. All names, figures, and the Tidewater Archive itself are fictional. Hero imagery: original GPT Image 2 concept art — unofficial assets, not evidence. Type set in Georgia, Arial, and ui-monospace fallbacks.</p>
+    <p class="fin" data-anim style="--i:0">Filed under <em>style studies</em></p>
+    <p class="credits" data-anim style="--i:1"><b>[06] Colophon.</b> Demonstration deck for the open-source skill <i>claude-fable-5-1-theme-workflow</i>. Colour states are an independent extraction from publicly visible page behaviour; no Anthropic fonts, logos, illustrations, or source code are used. All names, figures, and the Tidewater Archive itself are fictional. Hero imagery: original GPT Image 2 concept art — unofficial assets, not evidence. Type set in Georgia, Arial, and ui-monospace fallbacks.</p>
     <div class="foot"><span>Closing · Colophon</span><span>Not affiliated with Anthropic</span></div>
   </section>
 
@@ -269,6 +279,7 @@
   var slides = Array.prototype.slice.call(deck.querySelectorAll('.slide'));
   var dots = Array.prototype.slice.call(document.querySelectorAll('.theme-dots button'));
   var arts = Array.prototype.slice.call(document.querySelectorAll('.art'));
+  var dataviz = Array.prototype.slice.call(document.querySelectorAll('.dataviz-art'));
   var pager = document.querySelector('.pager');
   var current = 0;
 
@@ -293,6 +304,67 @@
     i = Math.max(0, Math.min(slides.length - 1, i));
     deck.scrollTo({ left: i * deck.clientWidth, behavior: 'auto' });
   }
+  /* Replay the entrance choreography for the slide that became current.
+     Driven by Date.now() + setInterval because the WebView animation clock
+     is unreliable; the first frame paints the "from" state, so a stalled
+     timer can never leave content invisible for long. */
+  var REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var tweenTimer = 0;
+
+  function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+
+  function playEnter(i) {
+    var s = slides[i];
+    if (!s) return;
+    clearInterval(tweenTimer);
+    var items = Array.prototype.slice.call(s.querySelectorAll('[data-anim]'));
+    var bars = Array.prototype.slice.call(s.querySelectorAll('.bar-row .fill'));
+    var counters = Array.prototype.slice.call(s.querySelectorAll('[data-count-to]'));
+    if (REDUCED) {
+      items.concat(bars).forEach(function (el) { el.style.opacity = '1'; el.style.transform = 'none'; });
+      counters.forEach(function (el) { el.textContent = el.dataset.countTo; });
+      return;
+    }
+    /* "from" state */
+    items.forEach(function (el) { el.style.opacity = '0'; el.style.transform = 'translateY(22px)'; });
+    bars.forEach(function (el) { el.style.transform = 'scaleX(0)'; });
+    var t0 = Date.now();
+    var DUR = 620, STAGGER = 110, BAR_EXTRA = 200, BAR_DUR = 900;
+    tweenTimer = setInterval(function () {
+      var el = Date.now() - t0;
+      var done = true;
+      items.forEach(function (node) {
+        var delay = (parseInt(node.style.getPropertyValue('--i'), 10) || 0) * STAGGER;
+        var p = (el - delay) / DUR;
+        if (p < 0) { done = false; return; }
+        if (p >= 1) { node.style.opacity = '1'; node.style.transform = 'none'; return; }
+        done = false;
+        var e = easeOut(p);
+        node.style.opacity = String(e);
+        node.style.transform = 'translateY(' + (22 * (1 - e)).toFixed(2) + 'px)';
+      });
+      bars.forEach(function (node) {
+        var delay = (parseInt(node.parentNode.parentNode.style.getPropertyValue('--i'), 10) || 0) * STAGGER + BAR_EXTRA;
+        var p = (el - delay) / BAR_DUR;
+        if (p < 0) { done = false; return; }
+        if (p >= 1) { node.style.transform = 'none'; return; }
+        done = false;
+        node.style.transform = 'scaleX(' + easeOut(p).toFixed(3) + ')';
+      });
+      /* Count-up: numbers tick from 0 to the target while their bar grows. */
+      counters.forEach(function (node) {
+        var delay = (parseInt(node.parentNode.style.getPropertyValue('--i'), 10) || 0) * STAGGER + BAR_EXTRA;
+        var p = (el - delay) / BAR_DUR;
+        var to = parseFloat(node.dataset.countTo);
+        var pad = parseInt(node.dataset.countPad || '0', 10);
+        if (p < 0) { done = false; return; }
+        var v = p >= 1 ? to : Math.round(to * easeOut(p));
+        node.textContent = pad ? String(v).padStart(pad, '0') : String(v);
+        if (p < 1) done = false;
+      });
+      if (done) clearInterval(tweenTimer);
+    }, 16);
+  }
   function sync() {
     var i = Math.round(deck.scrollLeft / deck.clientWidth);
     if (i === current) return;
@@ -300,6 +372,7 @@
     pageDots.forEach(function (d, j) { d.setAttribute('aria-current', String(j === i)); });
     var dark = slides[i].classList.contains('dark');
     document.body.classList.toggle('dark-on', dark);
+    playEnter(i);
   }
   deck.addEventListener('scroll', sync, { passive: true });
   window.addEventListener('resize', function () { go(current); });
@@ -323,6 +396,7 @@
       var mode = btn.dataset.mode;
       document.body.dataset.theme = mode;
       arts.forEach(function (img) { img.src = MODE_ART[mode]; });
+      dataviz.forEach(function (img) { img.src = 'assets/dataviz-' + mode + '.jpg'; });
       var copy = MODE_COPY[mode];
       document.getElementById('mode-name').textContent = copy[0];
       document.getElementById('mode-desc').textContent = copy[1];
@@ -340,6 +414,7 @@
 
   sync();
   pageDots[0].setAttribute('aria-current', 'true');
+  playEnter(0);
 })();
 </script>
 </body>
